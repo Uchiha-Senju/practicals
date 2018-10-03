@@ -18,7 +18,7 @@ using namespace std;
 
 int rows, cols;
 int min_neighbours, max_neighbours, neighbours_for_new;
-char block = char(510);
+int block = 475;
 
 bool evolveWorld(bool world[]) {
     int range[] = {-1,0,1};
@@ -33,15 +33,17 @@ bool evolveWorld(bool world[]) {
         
         same_state &= nextWorld[y * cols + x] == world[y * cols + x]; // Check is state is constant
     }
-    world = nextWorld;
-    for (bool k : world) all_dead &= !k; // check if all sells are dead
+    for (int i = 0; i < rows * cols; ++i) world[i] = nextWorld[i];
+    for (bool k : nextWorld) all_dead &= !k; // check if all sells are dead
     return same_state || all_dead;
 }
 
 void drawWorld(bool world[]) {
     for (int x = 1; x < cols; ++x) {
-        for (int y = 1; y < rows; ++y) 
-            if (world[y * cols + x]) cout << block;
+        for (int y = 1; y < rows; ++y) {
+            if (world[y * cols + x]) cout << char(block) << char(block);
+            else cout << char(432) << char(432);
+        }
         cout << endl;
     }
     cout << endl;
@@ -52,9 +54,10 @@ void daysOfCreation(bool world[]) {
     bool end = false;
     char choice;
     while (true) {
+        cout << "yolo" << endl;
         drawWorld(world);
         cout << "Enter if spawn cell (s) or kill cell (k) (q to quit) : ";
-        choice = getchar();
+        cin >> choice;
         switch (choice) {
             case 's':
                 cout << "Enter the coordinates of the cell (x y) : "; cin >> x >> y;
@@ -81,21 +84,20 @@ void daysOfCreation(bool world[]) {
 }
 
 int main() {
-    int cell_type;
-    cout << "Enter gird size (rows cols) : "; cin >> rows, cols;
+    cout << "Enter gird size (rows cols) : "; cin >> rows >> cols;
     cout << "Enter minimum no. of allowed neighbours : "; cin >> min_neighbours;
     cout << "Enter maximum no. of allowed neighbours : "; cin >> max_neighbours;
     cout << "Enter no. of neighbours for new cell : "; cin >> neighbours_for_new;
     rows += 2; cols += 2; //Add some buffer area aroung the grid
     bool world[rows*cols], end;
-    //cout << "Choose cell type (42 for *, 434 for " << char(434) << ", 475 for " << char(475) <<" , 510 for " << char(510)  << ", etc.): "; cin >> cell_type;
-    block = int(cell_type);
+    for (bool k : world) k = false;
+    //cout << "Choose cell type (42 for *, 434 for " << char(434) << ", 475 for " << char(475) <<" , 510 for " << char(510)  << ", etc.): "; cin >> block;
     daysOfCreation(world);
     drawWorld(world);
     while (true) {
         end = evolveWorld(world);
         drawWorld(world);
-        if (end) break;
+        //if (end) break;
     }
     getchar();
 }
