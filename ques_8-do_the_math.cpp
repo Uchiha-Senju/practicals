@@ -12,6 +12,7 @@
 ####################################################*/
 
 #include <iostream>
+#include <string.h>
 using namespace std;
 
 int abs(int x) {
@@ -38,7 +39,7 @@ double nthRoot(double b, double n) {
         a -= d;
         d = (a - b / pow(a, (n - 1) ));
     }
-    return (a>-1)? a : nan;
+    return (a>-1)? a : 1/0;
 }
 
 double pow(double b, double e) {
@@ -74,6 +75,57 @@ double cos(double x) {
     return a;
 }
 
+double pi(int accuracy) {
+    double pipa = 4;
+    for (int i = 0; i < accuracy; ++i) pipa += pow(-1.0,i) * 4 / (2 * i + 1);
+    return pipa;
+}
+
 int main() {
-    cout
+    string choice;
+    double x,y;
+    while (true) {
+        cout << "\n\nCall function (hl for help) :"; cin >> choice;
+        switch (choice) {
+            case "hl":
+                cout << "\nsn - sin\ncs - cosine\npi - pi\nex - power of e\nfc - factorial\npw - power of given number\nab - absolute value of given number\nnr - nth root of given num\n10 - nth power of 10";
+                break;
+            case "sn":
+                cout << "Enter angle : "; cin >> x;
+                cout << sin(x);
+                break;
+            case "cs":
+                cout << "Enter angle : "; cin >> x;
+                cout << cos(x);
+                break;
+            case "pi":
+                cout << "Enter angle : "; cin >> x;
+                cout << pi(x);
+                break;
+            case "ex":
+                cout << "Enter exponent : "; cin >> x;
+                cout << exp(x);
+                break;
+            case "fc":
+                cout << "Enter number : "; cin >> x;
+                cout << fact(x);
+                break;
+            case "pw":
+                cout << "Enter base and exponent : "; cin >> x >> y;
+                cout << sin(x);
+                break;
+            case "ab":
+                cout << "Enter number : "; cin >> x;
+                cout << abs(x);
+                break;
+            case "nr":
+                cout << "Enter base and root : "; cin >> x >> y;
+                cout << nthRoot(x,y);
+                break;
+            case "10":
+                cout << "Enter exponent of 10 : "; cin >> x;
+                cout << pow10l(x);
+                break;
+        }
+    }
 }
