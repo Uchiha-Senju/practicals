@@ -33,5 +33,6 @@ int main() {
         }
         cout << "\n\n";
     }
+    while (getchar() != '\n');
     getchar();
 }

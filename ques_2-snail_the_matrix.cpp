@@ -29,19 +29,21 @@ int main () {
     char mtr[r][c];
     bool mtr_alt[r][c];
     for (int k = 0; k < r*c; ++k) mtr_alt[k/r][k%c] = false;
-    for (int i = 0; i < r; ++i) for (int k = 0; k < c; ++k) {
-        cout << "Enter matrix element row " << i + 1 << " no. " << k + 1 << " : "; cin >> mtr[i][k]; // Get elements of matrix row-wise
+    for (int i = 0; i < r; ++i) {
+        cout << "\nEnter all row " << i + 1 << " elements : ";
+         for (int j = 0; j < c; ++j) cin >> mtr[i][j]; // Get elements of matrix row-wise
     }
-    
-    cout << "Snail trail : ";
+    cout << "\nSnail trail : ";
     Complex direction = {0,1}, n = {0,0};
     for (int i = 0; i < r*c; ++i) {
         cout << mtr[n.re][n.im] << ' ';
         mtr_alt[n.re][n.im] = true;        
-        if (mtr_alt[n.re + direction.re][n.im + direction.im] == true || n.im + direction.im >= c || n.re + direction.re >= r) { // Check if next element done or out of bounds 
-            direction = {-(direction.im * -1), direction.re * -1}; // Multiply by -i
+        if (mtr_alt[n.re + direction.re][n.im + direction.im] || n.im + direction.im >= c || n.re + direction.re >= r) { // Check if next element has been printed or is out of bounds 
+            direction = {-(direction.im * -1), direction.re * -1}; // Multiply directiom by -i if hit boundary or 
         }
-        n = {n.re + direction.re, n.im + direction.im};
+        n = {n.re + direction.re, n.im + direction.im}; //add direction to proceed to next
     }
-    getchar();
+    cout << endl;
+    {while (getchar() != '\n');
+    getchar();}
 }

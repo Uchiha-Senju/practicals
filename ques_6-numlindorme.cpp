@@ -13,11 +13,13 @@
 using namespace std;
 
 int main() {
-    long x; int b = 10; cout << "Enter number : "; cin >> x;
-    while (x>0) {
-        cout << x%b;
-        x /= b;
+    long x, x_copy; int b = 10; cout << "Enter number : "; cin >> x;
+    x_copy = x;
+    while (x_copy > 0) {
+        cout << x_copy % b;
+        x_copy /= b;
     }
     cout << endl;
-    getchar();
+    {while (getchar() != '\n');
+    getchar();}
 }

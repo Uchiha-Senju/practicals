@@ -25,4 +25,6 @@ int main () {
     string para; para = gets(&para[0]);
     cout << para << endl;
     for (int i = 0; i < no_cuss_words; ++i) cout << cuss_words[i] << endl;
+    {while (getchar() != '\n');
+    getchar();}
 }

@@ -33,4 +33,7 @@ int main() {
     if ( !n ) digit_no = 1;
     if ( n*n*n % (long long int)(pow(10, digit_no)) == n) cout << n << " is trimorphic ( n^3 = " << n*n*n / (long long int)(pow(10, digit_no)) << " " << n << ")"<< endl;
     else cout << n << " is not trimorphic (n^3 = " << n*n*n << ")"<< endl;
+    
+    {while (getchar() != '\n');
+    getchar();}
 }

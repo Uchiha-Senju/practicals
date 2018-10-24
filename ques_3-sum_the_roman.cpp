@@ -110,7 +110,8 @@ int main () {
         }
         cout << toRoman(sum) << endl;
     }
-    getchar();
+    {while (getchar() != '\n');
+    getchar();}
     /* times of struggle
     int n = 0;
     bool works = true;
