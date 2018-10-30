@@ -28,7 +28,7 @@ bool evolveWorld(bool world[]) {
     for (int x = 0, y = 0, neighbour_count = 0; x < rows && y < cols || (neighbour_count = 0); ++x,++y) {
         //Check for surrounding cells, loop to the other side if they are out of range, and also not count if both offsets are 0 (same cell)
         for(int x_off : range) for (int y_off : range)
-            if (world[((y + y_off + cols/2) % cols) * cols + ((x + x_off + rows/2) % rows)] || (y_off || x_off)) neighbour_count++;
+            if (world[((y + y_off + cols/2) % cols) * cols + ((x + x_off + rows/2) % rows)] && (y_off || x_off)) neighbour_count++;
         // Apply the rules
         if (neighbour_count < min_neighbours) nextWorld[y * cols + x] = false; // check for isolation
         if (neighbour_count > max_neighbours) nextWorld[y * cols + x] = false; // check for overcrowding
