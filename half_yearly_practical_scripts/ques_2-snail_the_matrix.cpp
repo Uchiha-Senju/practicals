@@ -30,7 +30,7 @@ int main () {
     bool mtr_alt[r][c];
     for (int k = 0; k < r*c; ++k) mtr_alt[k/r][k%c] = false;
     for (int i = 0; i < r; ++i) {
-        cout << "\nEnter all row " << i + 1 << " elements : ";
+        cout << "Enter all row " << i + 1 << " elements : ";
          for (int j = 0; j < c; ++j) cin >> mtr[i][j]; // Get elements of matrix row-wise
     }
     cout << "\nSnail trail : ";
@@ -39,7 +39,7 @@ int main () {
         cout << mtr[n.re][n.im] << ' ';
         mtr_alt[n.re][n.im] = true;        
         if (mtr_alt[n.re + direction.re][n.im + direction.im] || n.im + direction.im >= c || n.re + direction.re >= r) { // Check if next element has been printed or is out of bounds 
-            direction = {-(direction.im * -1), direction.re * -1}; // Multiply directiom by -i if hit boundary or 
+            direction = {direction.im, direction.re * -1}; // Multiply direction by -i ((a+ib)* -i = (b-ia)) if hit boundary or 
         }
         n = {n.re + direction.re, n.im + direction.im}; //add direction to proceed to next
     }

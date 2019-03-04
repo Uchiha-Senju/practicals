@@ -9,6 +9,7 @@
 #####################################*/
 
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
 double sqrt(double x) {
@@ -27,7 +28,20 @@ bool isPrime(int x) {
 }
 
 int main() {
-    unsigned int n;
+    unsigned int n, n_alt, dig = 0;
     cout << "Enter the limit : "; cin >> n;
-    for (int i = 2; i <= n; ++i) if (isPrime(i)) cout << i << endl;
+    n_alt = n;
+    do {
+        n_alt /= 10;
+        ++dig;
+    } while(n_alt);
+    
+    for (int i = 2, n_alt = 1; i <= n; ++i) 
+        if (isPrime(i)) {
+            cout << setw(3) << n_alt << ". "<< setw(dig) << i << endl;
+            ++n_alt;
+        }
+    
+    while(getchar() != '\n');
+    getchar();
 }

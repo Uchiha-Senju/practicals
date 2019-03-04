@@ -11,40 +11,47 @@
 #include <string.h>
 using namespace std;
 
-int* reverse(int arr[], unsigned int arr_size) {
-    int *rev = new int[arr_size];
-    if (!rev) {
-        cout << "Memory allocation error";
-        exit(2);
+// int* reverse(int arr[], unsigned int arr_size) {
+    // int *rev = new int[arr_size];
+    // if (!rev) {
+        // cout << "Memory allocation error";
+        // exit(2);
+    // }
+    // for (int i = 0; i < arr_size; ++i) 
+        // rev[i] = arr[arr_size - (i + 1)];
+    // return rev;
+// }
+
+void reverse(int arr[], unsigned int arr_size) {
+    for (int i = 0; i < arr_size/2; ++i) {
+        arr[i] += arr[arr_size - i - 1];
+        arr[arr_size - i - 1] = arr[i] - arr[arr_size - i - 1];
+        arr[i] -= arr[arr_size - i - 1];
     }
-    for (int i = 0; i < arr_size; ++i) 
-        rev[i] = arr[arr_size - (i + 1)];
-    return rev;
 }
 
 int main() {
-    string choice;
     int no_of_elements;
     cout << "Enter no. of elements in integer array : "; cin >> no_of_elements;
     cout << endl;
     
-    int arr[no_of_elements], *rev = NULL
-    ;
+    int arr[no_of_elements];//, *rev = NULL;
     for (int i = 0; i < no_of_elements; ++i) {
         cout << "Enter element " << i + 1 << " : "; cin >> arr[i];
     }
     
-    cout << "Given array = [ " << arr[0];
-    for (int i = 1; i < no_of_elements; ++i) 
-        cout << ", " << arr[i];
-    cout << "]" << endl;
+    cout << "Given array = [";
+    for (int i = 0; i < no_of_elements; ++i) 
+        cout << arr[i] << ", ";
+    cout << "\b\b]" << endl;
     
-    rev = reverse(arr, no_of_elements);
+    //rev = 
+    reverse(arr, no_of_elements);
     
-    cout << "Reversed array = [ " << *rev;
-    for (int i = 1; i < no_of_elements; ++i) 
-        cout << ", " << *(rev + i);
-    cout << "]" << endl;
+    cout << "Reversed array = [";
+    for (int i = 0; i < no_of_elements; ++i) 
+        cout << arr[i] << ", ";
+    cout << "\b\b]" << endl;
     
     while (getchar() !='\n');
     getchar();

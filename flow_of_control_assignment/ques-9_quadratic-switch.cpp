@@ -13,11 +13,12 @@ using namespace std;
 
 long double sqrt(long double x) {
     long double a = 1, a_old = 0;
-    while (a != a_old and x > 0) {
+    if(x <= 0) return 0;
+    while (a != a_old) {
         a_old = a;
         a -= (a - x/a)/2;
     }
-    return (x>0)?a:0;
+    return a;
     
 }
 

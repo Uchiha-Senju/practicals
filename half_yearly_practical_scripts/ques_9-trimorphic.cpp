@@ -16,15 +16,18 @@ using namespace std;
 
 double pow(double b , int e) {
     double r = 1;
-    for (int i = 0; i < abs(e); ++i) {
-        if (b > 0) r *= double(b);
-        if (b < 0) r /= double (b);
-    }
+    if (e < 0)
+        for (int i = 0; i < -e; ++i) 
+            r /= b;
+    else if (e > 0)
+        for (int i = 0; i < e; ++i) 
+            r *= b;
     return r;
 }
 
 int main() {
-    int n, n_alt, digit_no = 0; cout << "Enter the number : "; cin >> n;
+    int n, n_alt, digit_no = 0;
+    cout << "Enter the number : "; cin >> n;
     n_alt = n;
     while (n_alt > 0) {
         n_alt /= 10;

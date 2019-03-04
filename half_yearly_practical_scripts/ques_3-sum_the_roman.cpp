@@ -26,10 +26,16 @@ using namespace std;
 
 int pow(int b, int e){
     int pow = 1;
-    while (e) {
-        pow *= b;
-        --e;
-    }
+    if (e > 0)
+        while (e) {
+            pow *= b;
+            --e;
+        }
+    else if (e < 0)
+        while (e) {
+            pow /= b;
+            ++e;
+        }
     return pow;
 }
 
@@ -82,7 +88,7 @@ string toRoman(int n) {
             k += toRoman_dig(pow(10,i)); k += toRoman_dig(pow(10,i+1)); //Print 9 as 10 - 1
         }
         else if (n/pow(10,i) > 5) {
-            k += toRoman_dig(pow(10,i)*5); //Print hte 5 factor separatley
+            k += toRoman_dig(pow(10,i)*5); //Print the 5 factor separatley
             for (int l = 0; l<n/pow(10,i)-5; ++l) k += toRoman_dig(pow(10,i));
         }
         n %= int(pow(10,i));
@@ -112,15 +118,14 @@ int main () {
     }
     {while (getchar() != '\n');
     getchar();}
-    /* times of struggle
-    int n = 0;
-    bool works = true;
-    cout << works;
-    while (n<3999) {
-        works = works && n == toNum(toRoman(n));
-        cout << n << "  " << toRoman(n) << "  " << toNum(toRoman(n)) << endl;
-        ++n;
-    }
-    cout << works;*/
+    // times of struggle
+    // bool works = true;
+    // cout << works;
+    // for (int n = 0; n < 3999; ++n) {
+        // cout << "\tyolo\t";
+        // works &= (n == toNum(toRoman(n)));
+        // cout << n << "  " << toRoman(n) << "  " << toNum(toRoman(n)) << endl;
+    // }
+    // cout << works;
 }
 

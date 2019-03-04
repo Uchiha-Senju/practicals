@@ -14,6 +14,7 @@ using namespace std;
 
 long double fact(int x) {
     long double a = 1;
+    if (x < 0) return 0;
     for (int i = 2; i <= x; ++i) 
         a *= i;
     return a;

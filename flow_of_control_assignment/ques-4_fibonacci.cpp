@@ -15,7 +15,7 @@ int main() {
     cout << "Number of terms? "; cin >> n;
     cout << a << endl << b << endl;
     {
-        int i = 0;
+        int i = 2;
         do {
             c = a + b;
             a = b, b = c, ++i;

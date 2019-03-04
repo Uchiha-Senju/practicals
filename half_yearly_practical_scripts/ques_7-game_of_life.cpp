@@ -18,7 +18,64 @@ using namespace std;
 
 int rows, cols;
 int min_neighbours = 0, max_neighbours = 0, neighbours_for_new = 3;
-int block = 475;
+int block = 475;;;
+
+;class ConwayGame {
+    private : 
+        bool land[30][30];
+        int min_neighbours, max_neighbours, neighbours_for_new;
+        char alive_block, dead_block;
+    public : 
+        void __init__(int min_n,int max_n, int n_f_n, char a_b, char d_b) {
+            min_neighbours = min_n;
+            max_neighbours = max_n;
+            neighbours_for_new = n_f_n;
+            alive_block = a_b;
+            dead_block = d_b;
+        }        
+        void cleanLand() {
+            for (int i = 0; i < 30; ++i) 
+                for (int j = 0; j < 30; ++j)
+                    land[i][j] = false;
+        }
+        void setCellState(int x, int y, bool isAlive) {
+            if (x < 30 && y < 30) 
+                land[x][y] = isAlive;
+        }
+        void computeNextDay() {
+            bool next_land[30][30];
+            int alive_neighbours;
+            for (int i = 0; i < 30; ++i)
+                for (int j = 0; j < 30; ++j) {
+                    for (int i_off = -1; i_off <= 1; ++i_off)
+                        for (int j_off = -1; j_off <= 1; ++j_off)
+                            alive_neighbours += int( land[ (30 + i + i_off)%30 ][  (30 + j + j_off)%30 ]);
+                    alive_neighbours -= int(land[i][j]);
+                    if (alive_neighbours < min_neighbours || alive_neighbours > max_neighbours)
+                        next_land[i][j] = false;
+                    else if (alive_neighbours >= neighbours_for_new)
+                        next_land[i][j] = true;
+                    else
+                        next_land[i][j] = land[i][j];
+                }
+            for (int i = 0; i < 30; ++i)
+                for (int j = 0; j < 30; ++j) 
+                    land[i][j] = next_land[i][j];
+        }
+        void drawLand() {
+            cout << '\n';
+            // for (int i = -15; i < 30 + 15; ++i) {
+            for (int i = 0; i < 30; ++i) {
+                // for (int j = -15; j < 30 + 15; ++j) 
+                for (int j = 0; j < 30; ++j)
+                    if ( land[ (30 + i)%30 ][  (30 + j)%30 ]) 
+                        cout << alive_block << alive_block;
+                    else
+                        cout << dead_block << dead_block;
+                cout << '\n';
+            }
+        }
+};
 
 bool evolveWorld(bool world[]) {
     int range[] = {-1,0,1};
@@ -61,23 +118,23 @@ void drawWorld(bool world[]) {
     cout << endl;
 }
 
-void daysOfCreation(bool world[]) {
+void daysOfCreation(ConwayGame world) {
     int x, y;
     bool end = false;
     char choice;
     //while (getchar() == '\n'); // Clear all characters in input buffer until newline
     while (true) {
-        drawWorld(world);
+        world.drawLand();
         cout << "Enter if spawn cell (s) or kill cell (k) (e to end creation mode) : ";
         cin >> choice;
         switch (choice) {
             case 's':
                 cout << "Enter the coordinates of the cell (x y) : "; cin >> x >> y;
-                world[y * cols + x] = true;
+                world.setCellState(x, y, true);
                 break;
             case 'k':
                 cout << "Enter the coordinates of the cell (x y) : "; cin >> x >> y;
-                world[y * cols + x] = false;
+                world.setCellState(x, y, false);
                 break;
             case 'e':
                 end = true;
@@ -89,23 +146,30 @@ void daysOfCreation(bool world[]) {
 }
 
 int main() {
-    cout << "Enter gird size (rows cols) : "; cin >> rows >> cols;
+    // cout << "Enter gird size (rows cols) : "; cin >> rows >> cols;
+    ConwayGame world;
+    world.cleanLand();
     while (neighbours_for_new > max_neighbours || neighbours_for_new < min_neighbours) {
         cout << "Enter minimum and maximum no. of allowed neighbours, and no. of neighbours for reproduction : ";
         cin >> min_neighbours >> max_neighbours >> neighbours_for_new;
     }
-    bool world[rows*cols], end;
-    for (int i = 0; i < rows * cols; ++i) world[i] = false;
+    world.__init__(min_neighbours, max_neighbours, neighbours_for_new, char(475), char(432));
+    bool end;
     //cout << "Choose cell type (42 for *, 434 for " << char(434) << ", 475 for " << char(475) <<" , 510 for " << char(510)  << ", etc.): "; cin >> block;
     system("CLS");
     daysOfCreation(world);
     system("CLS");
-    drawWorld(world);
+    world.setCellState(11,11,true);
+    world.setCellState(12,12,true);
+    world.setCellState(12,11,true);
+    world.setCellState(11,12,true);
+    world.drawLand();
+    while(getchar()!= '\n');
     while (true) {
-        // system("CLS");
-        end = evolveWorld(world);
-        drawWorld(world);
-        if (end) break;
+        world.computeNextDay();
+        system("CLS");
+        world.drawLand();
+        while(getchar()!= '\n');
     }
     {while (getchar() != '\n');
     getchar();}

@@ -16,7 +16,7 @@
 ####################################################*/
 
 #include <iostream>
-#include <cstring>
+#include <string.h>
 using namespace std;
 
 bool isVowel(char c) {
@@ -25,6 +25,7 @@ bool isVowel(char c) {
 
 int main () {
     string k; k = gets(&k[0]);
+    
     int no_of_consonants = 0;
     bool saw_vowel = false, vowel_first = false;
     string c = "";
@@ -45,10 +46,14 @@ int main () {
             else cout << "ay";
             if (i + 1 != strlen(&k[0])) cout << k[i];
             if (k[i] == '.') cout << k[++i]; //If ., then print next also, sinc it is ' ''
-            saw_vowel = false; vowel_first = false; no_of_consonants = 0; c = "";
+            // reset
+            saw_vowel = false; vowel_first = false; no_of_consonants = 0;
+            c = "";
         }
         else if (saw_vowel /* && ! isVowel(k[i]) */) cout << k[i]; //Print consonants after vowel
         else if (!saw_vowel && !isVowel(k[i])) c += k[i]; //Don't print but remember consonants before vowel
     }
+    
+    while (getchar() != '\n');
     getchar();
 }
