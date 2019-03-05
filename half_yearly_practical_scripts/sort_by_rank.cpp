@@ -22,6 +22,15 @@ class Student {
         int total(void) {
             return marks[0] + marks[1] + marks[2];
         }
+        char grade(void) {
+            int t = total();
+            if (t >= 270) return 'A';
+            else if (t >= 240) return 'B';
+            else if (t >= 210) return 'C';
+            else if (t >= 180) return 'D';
+            else if (t >= 150) return 'E';
+            else return 'F';
+        }
 };
 
 void strcpy(char* s1, const char* s2) {
@@ -136,7 +145,7 @@ int main () {
         strcpy(full_name, (stu_list[i].l_name) );
         strcat(full_name, (", ") );
         strcat(full_name, (stu_list[i].f_name) ); 
-        cout << setw(3) << (i + 1 - offset) << ". " << setw(66) << full_name << "  " << setw(4) << stu_list[i].total() << endl;
+        cout << setw(3) << (i + 1 - offset) << ". " << setw(66) << full_name << "  " << setw(4) << stu_list[i].total() << setw(3) << stu_list[i].grade() << endl;
         if ((i + 1) != no_stu and stu_list[i].total() == stu_list[i + 1].total()) ++offset;
         else offset = 0;
         
