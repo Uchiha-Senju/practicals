@@ -36,9 +36,9 @@ int main() {
     cout << endl;
     
     int arr[no_of_elements];//, *rev = NULL;
-    for (int i = 0; i < no_of_elements; ++i) {
-        cout << "Enter element " << i + 1 << " : "; cin >> arr[i];
-    }
+    cout << "Enter " << no_of_elements << " elements : ";
+    for (int i = 0; i < no_of_elements; ++i) 
+        cin >> arr[i];
     
     cout << "Given array = [";
     for (int i = 0; i < no_of_elements; ++i) 

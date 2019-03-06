@@ -23,4 +23,6 @@ int main() {
             cout << j;
         cout << endl;
     }
+    while (getchar() != '\n');
+    getchar();
 }
