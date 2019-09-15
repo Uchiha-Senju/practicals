@@ -2,13 +2,13 @@
 #define SQR(x) x*x
 using namespace std;
 
-int Sqr(int x) { return x * x; }
+float Sqr(float x) { return x * x; }
 
-inline int sqr(int x) { return x * x;}
+inline float sqr(float x) { return x * x;}
 
 int main () {
   unsigned int choice;
-  int n;
+  float n;
   
   cout << "Welcome to Square-inator\n"
        << "========================\n";

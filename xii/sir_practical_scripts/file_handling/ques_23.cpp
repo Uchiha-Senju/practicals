@@ -35,7 +35,7 @@ int main() {
   else 
     cout << "Given substring '" << substring << "' is not present in '" << file_name << "'\n";
   
-  while (cin.get() != '\n')
+  while (cin.get() != '\n');
   cin.get();
   
   return 0;

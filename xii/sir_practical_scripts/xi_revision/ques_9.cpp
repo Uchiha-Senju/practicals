@@ -25,7 +25,7 @@ int main() {
     // cout << arr_tracker[i] << ' ';
   // cout << '\n';
 
-  // Mark and remove them all duplicate entries
+  // Mark and remove all duplicate entries
   for (int i = 0; i < size_arr; ++i) {
     int in_focus = arr[i];
     for (int j = i + 1; j < size_arr; ++j)
@@ -53,7 +53,7 @@ int main() {
           break;
         else j++;
       }
-      // No need  to cintinue if is all duplcates till the end of the array
+      // No need  to continue if is all duplcates till the end of the array
       if (j == size_arr) break;
       
       // Swap values

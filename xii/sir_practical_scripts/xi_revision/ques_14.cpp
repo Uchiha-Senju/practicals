@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <iomanip>
 using namespace std;
 
 template <typename base_type = double>
@@ -26,16 +27,9 @@ base_type pow_int(base_type b, long long int e) {
       num *= square_base;
     square_base *= square_base;
     power /= 2;
-    //cout << "\n\tnum - " << num << "\n\tsquare-base - " << square_base << "\n\tpower - " << power << '\n';
   }
   
   return num;
-  
-  // if (e > 0) 
-    // return num;
-  
-  // else 
-    // return 1 / num;
 }
 
 template <typename base_type = long long int>
@@ -85,11 +79,11 @@ int main() {
   cout << "Pass exponent to function (y/n)? "; cin >> pass_exp;
   cout << "Result is ";
   if (pass_exp == 'n' or pass_exp == 'N') 
-    cout << power(x);
+    cout << setprecision(50) << std::fixed << power(x);
   else 
-    cout << power(x,n);
+    cout << setprecision(50) << std::fixed << power(x,n);
   
-  cin.ignore(10e5, '\n');
+  cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
   cin.clear();
   getchar();
   

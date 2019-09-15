@@ -14,10 +14,10 @@ unsigned long long fibonacci(int n) {
 }
 
 int main() {
-    unsigned int terms = 0; //cout << sizeof(long) << "  " << cout << sizeof(long long);
+    unsigned int terms = 0;
     cout << "No. of terms? "; cin >> terms;
     for (int i = 1; i <= terms; ++i)
-        cout << i << " - " << fibonacci(i) << endl; //"  " << LONG_MAX << endl;
+        cout << i << " - " << fibonacci(i) << endl;
 
     while (getchar() != '\n');
     getchar();

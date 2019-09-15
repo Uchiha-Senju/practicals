@@ -5,36 +5,6 @@
 #include <stdlib.h>
 using namespace std;
 
-int strcmp(const char* str1, const char* str2) {
-  for (int i = 0; /*str[i] != '\0' and str2[i] != '\0'*/; ++i) {
-    if (str1[i] > str2[i])
-      return 1;
-    else if (str1[i] < str2[i])
-      return -1;
-    else if (str1[i] == '\0' /*and str2[i] == '\0'*/)
-      return 0;
-  }
-  // switch( 2*(str1[i] == '\0') + str2[i] == '\0' ) {
-    // case 0 : // not posible, missed something
-      // return str1 < str2;
-      // break;
-    // case 1 : // str1 longer than str2
-      // return false;
-    // case 2 : // str1 shorter than str2
-      // return true;
-    // case 3 : // equivalence
-      // return false;
-  // }
-}
-
-char* strcpy(char* str1, char* str2) {
-  int i;
-  for (i = 0; str2[i] != '\0'; ++i)
-    str1[i] = str2[i];
-  str1[i] = '\0';
-  return str2;
-}
-
 template <typename arr_type>
 void quick_sort(arr_type* arr, int start, int end, bool descending = false) {
   if (end - start <= 1 or start < 0) return;
@@ -91,25 +61,7 @@ void quick_sort(char** arr, int start, int end, bool descending = false) {
   return;
 }
 
-int main () {
-  // srand(time(nullptr));
-  
-  // int arr[10];
-  // for (int i = 0; i < 10; ++i) 
-    // arr[i] = rand();
-  
-  // cout << "Random array : ";
-  // for (int i = 0; i < 10; ++i) 
-    // cout << arr[i] << ' ';
-  // cout << "\n\n";
-  
-  // quick_sort<int>(arr, 0, 10, false);
-  
-  // cout << "Sorted array : ";
-  // for (int i = 0; i < 10; ++i) 
-    // cout << arr[i] << ' ';
-  // cout << "\n\n";
-  
+int main () {  
   unsigned int no_of_elements, choice;
   cout << "Give array datatype : \n"
        << "int : 1\n"
@@ -164,7 +116,7 @@ int main () {
     for (int i = 0; i < no_of_elements; ++i)
       arr[i] = new char[max_str_size + 1];
     
-    cin.ignore(1e5, '\n');
+    cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
     cout << "Input array : ";
     for (int i = 0; i < no_of_elements; ++i)  
       cin.getline(arr[i], max_str_size + 1, '\n');

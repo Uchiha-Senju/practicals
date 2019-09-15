@@ -31,7 +31,6 @@ int main() {
     for (i = 0; word[i] != '\0'; ++i);
     if (not isVowel(word[i - 1]))
       output_file << word << ' ';
-    cout << input_file.tellg() << " : " << word << '\n';
   }
   
   cout << "Done\n";
