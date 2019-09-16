@@ -181,15 +181,15 @@ class Library {
           int pivotIndex = start;
           smallBook_n temp;
           for (int i = start ; i < end - 1 ; ++i) {
-            if (strcmp(arr[i].book_name, arr[end].book_name)  <= 0) {
+            if (strcmp(arr[i].book_name, arr[end - 1].book_name)  <= 0) {
               temp = arr[i];
               arr[i] = arr[pivotIndex];
               arr[pivotIndex] = temp;
               pivotIndex++;
             }
           }
-          temp  = arr[end];
-          arr[end] = arr[pivotIndex];
+          temp  = arr[end - 1];
+          arr[end - 1] = arr[pivotIndex];
           arr[pivotIndex] = temp;
           quickSort_n(arr, start, pivotIndex);
           quickSort_n(arr, pivotIndex + 1, end);
@@ -239,15 +239,15 @@ class Library {
           int pivotIndex = start;
           smallBook_n temp;
           for (int i = start ; i < end - 1 ; ++i) {
-            if (arr[i].book_number < arr[end].book_number) {
+            if (arr[i].book_number < arr[end - 1].book_number) {
               temp = arr[i];
               arr[i] = arr[pivotIndex];
               arr[pivotIndex] = temp;
               pivotIndex++;
             }
           }
-          temp  = arr[end];
-          arr[end] = arr[pivotIndex];
+          temp  = arr[end - 1];
+          arr[end - 1] = arr[pivotIndex];
           arr[pivotIndex] = temp;
           quickSort_n(arr, start, pivotIndex);
           quickSort_n(arr, pivotIndex + 1, end);

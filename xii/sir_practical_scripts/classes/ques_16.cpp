@@ -71,11 +71,36 @@ struct Student {
   unsigned int marks;
 };
 
+void quickSort(Student* arr, unsigned int start, unsigned int end, bool ascending = true) {
+  if (end <= start + 1 or arr == nullptr)
+    return;
+  int pivotIndex = start;
+  Student temp;
+  for (int i = start; i < end - 1; ++i) {
+    if (arr[i].marks < arr[end - 1].marks xor not ascending) {
+      temp = arr[i];
+      arr[i] = arr[pivotIndex];
+      arr[pivotIndex] = temp;
+      pivotIndex++;
+    }
+  }
+  temp = arr[pivotIndex];
+  arr[pivotIndex] = arr[end - 1];
+  arr[end - 1] = temp;
+  quickSort(arr, start, pivotIndex, ascending);
+  quickSort(arr, pivotIndex + 1, end, ascending);
+  return;
+}
+
 int main () {
   Student stu_arr[20];
   int no_of_students;
-  cout << "No. of students? ";
-  do {cin >> no_of_students;} while (no_of_students > 20);
+  bool ascending = false;
+  char choice;
+  do {
+    cout << "No. of students? ";
+    cin >> no_of_students;
+  } while (no_of_students > 20);
   cout << "Enter student details : \n";
   for (int i = 0; i < no_of_students; ++i) {
     cout << "\tStudent " << i << " : \n";
@@ -94,6 +119,11 @@ int main () {
     // cout << setw(19) << stu_arr[i].name << "  ";
     // cout << setw(4) << stu_arr[i].marks << '\n';
   // }
+  
+  cout << "\n\nDisplay in ascending (y/n)?";
+  cin >> choice;
+  if (choice == 'y' or choice == 'Y') ascending = true;
+  quickSort(stu_arr, 0 , no_of_students, ascending);
   
   ClearScreen();
   

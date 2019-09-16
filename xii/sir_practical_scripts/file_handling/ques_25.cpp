@@ -7,7 +7,7 @@ int main() {
   char file_name[100];
   char old_ch, new_ch;
   
-  cout << "Enter input fiename : "; cin.getline(file_name, 100);
+  cout << "Enter input filename : "; cin.getline(file_name, 100);
   input_file.open(file_name, ios::in);
   temp_file.open(".temp.txt", ios::out);
   if (not input_file.is_open()) {

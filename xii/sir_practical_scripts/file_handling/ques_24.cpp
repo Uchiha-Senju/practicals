@@ -15,7 +15,7 @@ bool isVowel(char c) {
 
 int main() {
   ifstream input_file;
-  ofstream output_file("copy.txt", ios::out);
+  ofstream output_file("copy.txt", ios::out | ios::trunc);
   char file_name[100], word[100];
   
   cout << "Enter filename for input : "; cin.getline(file_name, 100);

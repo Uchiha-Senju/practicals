@@ -123,7 +123,6 @@ class WorkingStudent : public Student {
     display_stream << pre_str << "Job : ";
     input_stream.getline(this->job, 20, '\n');
     
-    input_stream.ignore(std::numeric_limits<streamsize>::max(), '\n');
     input_stream.clear();
     display_stream << pre_str << "Office Address : ";
     input_stream.getline(this->office_address, 50, '\n');
