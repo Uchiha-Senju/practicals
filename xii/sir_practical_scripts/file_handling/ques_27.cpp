@@ -56,6 +56,12 @@ int main() {
     }
   }
   
+  record_file.seekg(0, ios::beg);
+  for (int i = 1; record_file.read((char*)(&record), sizeof(BloodDonor)); ++i) {
+    cout << "\nRecord " << i << " : ";
+    record.display(cout);
+  }
+  
   do {
     cout << "\n\nPick an option : ";
     cout << "\n\t1 - Append records"
@@ -70,9 +76,7 @@ int main() {
         cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
         
         // Clear EOF errors, if any, and go to the end
-        record_file.clear();
-        record_file.seekp(0, ios::end);
-        cout << "\npos : " << record_file.tellg();
+        record_file.clear(); record_file.seekp(0, ios::end);
         for (int i = 0; i < n; ++i) {
           cout << "\nEnter Record Details : ";
           record.getData(cin, cout);
@@ -87,8 +91,7 @@ int main() {
         found = false;
         
         // Clear EOF errors, if any, and go to the beginning
-        record_file.clear();
-        record_file.seekg(0, ios::beg);
+        record_file.clear(); record_file.seekg(0, ios::beg);
         for (int i = 1; record_file.read((char*)(&record), sizeof(BloodDonor)) and not found; ++i) {
           if (strcmp(phone_no, record.tele_no) == 0) {
             found = true;
@@ -113,8 +116,7 @@ int main() {
         cout << "\nEnter blood group : "; cin.getline(blood_group, 4);
         found = false;
         
-        record_file.clear();
-        record_file.seekg(0, ios::beg);
+        record_file.clear(); record_file.seekg(0, ios::beg);
         for (int i = 1; record_file.read((char*)(&record), sizeof(BloodDonor)); ++i) {
           if (strcmp(blood_group, record.group) == 0) {
             found = true;

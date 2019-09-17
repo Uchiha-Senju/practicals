@@ -9,7 +9,7 @@ int main() {
   
   cout << "Enter input filename : "; cin.getline(file_name, 100);
   input_file.open(file_name, ios::in);
-  temp_file.open(".temp.txt", ios::out);
+  temp_file.open(".temp.txt", ios::out | ios::trunc);
   if (not input_file.is_open()) {
     cerr << "ValueError : Invalid filename given";
     return 1;
@@ -29,16 +29,8 @@ int main() {
     else 
       temp_file.write(&ch, 1);
   }
-  input_file.close(); input_file.open(file_name, ios::out);
-  temp_file.close(); temp_file.open(".temp.txt", ios::in);
-  input_file.seekp(0, ios::beg);
-  temp_file.seekg(0, ios::beg);
-  
-  while (not temp_file.eof()) {
-    char ch;
-    temp_file.read(&ch, 1);
-    input_file.write(&ch, 1);
-  }
+  input_file.close(); 
+  temp_file.close(); 
   
   cout << "Done";
   

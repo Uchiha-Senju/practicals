@@ -195,7 +195,6 @@ class Library {
           quickSort_n(arr, pivotIndex + 1, end);
         }
       } dummy;
-      cout << "here";
       int siz = size();
       // Create a lighter representative array
       smallBook_n* books = new smallBook_n[siz];
@@ -205,10 +204,8 @@ class Library {
         strcpy(books[i].book_name, cur_book.Book_name);
       }
       // Sort the lighter array
-      cout << "sorting";
       dummy.quickSort_n(books, 0, siz);
       // shuffle according to the sorted positions
-      cout << "start moving";
       shelf.clear();
       for (int i = 0; i < siz; ++i) {
         Book temp1, temp2;
@@ -262,13 +259,9 @@ class Library {
         books[i].book_number = cur_book.BookNo;
       }
       for (int i = 0; i < siz; ++i)
-        cout << i << " - " << books[i].index << " : ";
-      cout << '\n';
       // Sort the lighter array
       dummy.quickSort_n(books, 0, siz);
       for (int i = 0; i < siz; ++i)
-        cout << i << " - " << books[i].index << " : ";
-      cout << '\n';
       // shuffle according to the sorted positions
       shelf.clear();
       for (int i = 0; i < siz; ++i) {
@@ -335,7 +328,7 @@ int main() {
   int choice;
   Library lib("book.dat");
   
-  cout << "Enter password : "; cin.getline(str, 11);
+  cout << "Enter password (10 characters) : "; cin.getline(str, 11);
   ClearScreen();
   lib.setPassword(str);
   
@@ -392,9 +385,11 @@ int main() {
         break;
       case 6 :
         lib.sortByName();
+        lib.display(cout);
         break;
       case 7 :
         lib.sortByNumber();
+        lib.display(cout);
         break;
       case 8 :
         cout << "\nBYE!!\n";
