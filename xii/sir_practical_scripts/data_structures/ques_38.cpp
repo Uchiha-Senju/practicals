@@ -9,13 +9,13 @@ class LinkedStack {
     Node* next;
     
     Node() : data(), previous(nullptr), next(nullptr) {}
-    Node(T& new_data, Node* prev = nullptr, Node* nxt = nullptr) : data(new_data), previous(prev), next(nxt) {}
+    Node(const T& new_data, Node* prev = nullptr, Node* nxt = nullptr) : data(new_data), previous(prev), next(nxt) {}
     ~Node() {
       previous = next = nullptr;
       data.~T();
     }
     
-    Node* makeNext(T& new_data) {
+    Node* makeNext(const T& new_data) {
       Node* new_next = new Node(new_data, this);
       if (new_next != nullptr)
         next = new_next;
@@ -33,7 +33,7 @@ class LinkedStack {
       for (int i = 1; i < stack_size; ++i)
         top = top->makeNext(old_arr[i]);
     }
-    LinkedStack(LinkedStack<T>& old_ls) {
+    LinkedStack(const LinkedStack<T>& old_ls) {
       Node* leach_point = old_ls.top;
       bottom = top = new Node(leach_point->data);
       leach_point = leach_point->next;
@@ -43,6 +43,9 @@ class LinkedStack {
       }
     }
     
+    bool isEmpty() {
+      return top == nullptr;
+    }
     int size() {
       int size = 0;
       Node* read_head = bottom;
@@ -62,7 +65,7 @@ class LinkedStack {
       }
       return old_top->data;
     }
-    bool push(T& new_data) {
+    bool push(const T& new_data) {
       if (top == nullptr) {
         top = bottom = new Node(new_data);
         return top != nullptr;
@@ -78,7 +81,7 @@ class LinkedStack {
         return T();
       return top->data;
     }
-    bool is_ok() {
+    bool isOk() {
       if (bottom == nullptr)
         return true;
       Node* read_head = bottom;
@@ -89,7 +92,7 @@ class LinkedStack {
       return true;
     }
     void display(ostream& out_stream) {
-      if (not is_ok())
+      if (not isOk())
         out_stream << "Stack Corrupted";
       Node* read_head = bottom;
       out_stream << '[';

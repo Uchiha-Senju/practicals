@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
 int main() {
@@ -20,7 +21,7 @@ int main() {
   for (int i = 0; i < arr_size; ++i) {
     cout << "\n ";
     for (int j = 0; j < arr_size; ++j)
-      cout << ' ' << arr_2d[i][j];
+      cout << ' ' << setw(10) << arr_2d[i][j];
   }
   cout << "\n\n";
   

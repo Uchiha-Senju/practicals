@@ -9,13 +9,13 @@ class LinkedQueue {
     Node* next;
     
     Node() : data(), previous(nullptr), next(nullptr) {}
-    Node(T& new_data, Node* prev = nullptr, Node* nxt = nullptr) : data(new_data), previous(prev), next(nxt) {}
+    Node(const T& new_data, Node* prev = nullptr, Node* nxt = nullptr) : data(new_data), previous(prev), next(nxt) {}
     ~Node() {
       previous = next = nullptr;
       data.~T();
     }
     
-    Node* makeNext(T& new_data) {
+    Node* makeNext(const T& new_data) {
       Node* new_next = new Node(new_data, this);
       if (new_next != nullptr)
         next = new_next;
@@ -33,7 +33,7 @@ class LinkedQueue {
       for (int i = 1; i < queue_length; ++i)
         tail = tail->makeNext(old_arr[i]);
     }
-    LinkedQueue(LinkedQueue<T>& old_lq) {
+    LinkedQueue(const LinkedQueue<T>& old_lq) {
       Node* leach_point = old_lq.top;
       tail = top = new Node(leach_point->data);
       leach_point = leach_point->next;
@@ -63,7 +63,7 @@ class LinkedQueue {
       }
       return old_top->data;
     }
-    bool append(T& new_data) {
+    bool append(const T& new_data) {
       if (tail == nullptr) {
         top = tail = new Node(new_data);
         return tail != nullptr;
@@ -79,7 +79,7 @@ class LinkedQueue {
         return T();
       return tail->data;
     }
-    bool is_ok() {
+    bool isOk() {
       if (top == nullptr)
         return true;
       Node* read_head = top;
@@ -90,7 +90,7 @@ class LinkedQueue {
       return true;
     }
     void display(ostream& out_stream) {
-      if (not is_ok()) 
+      if (not isOk()) 
         out_stream << "Queue Corrupted";
       out_stream << '[';
       Node* read_head = top;
@@ -139,7 +139,7 @@ int main () {
         break;
       
       case 'd' : case 'D' :
-        cout << "\nStack contents : "; queue.display(cout);
+        cout << "\nQueue contents : "; queue.display(cout);
         break;
       
       case 's' : case 'S' :

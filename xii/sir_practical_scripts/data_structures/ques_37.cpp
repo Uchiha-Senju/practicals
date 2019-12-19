@@ -18,7 +18,7 @@ class QueueWithArray {
       for (int i = 0; i < length; ++i)
         arr[i] = old_arr[i];
     }
-    QueueWithArray(QueueWithArray<T>& old_qwa) : QueueWithArray(old_qwa.length, old_qwa.arr) {
+    QueueWithArray(const QueueWithArray<T>& old_qwa) : QueueWithArray(old_qwa.length, old_qwa.arr) {
       top = old_qwa.top;
       tail = old_qwa.tail;
     }
@@ -32,7 +32,7 @@ class QueueWithArray {
         top = (tail = -1);
       return arr[old_first]; 
     }
-    bool append(T new_data) {
+    bool append(const T& new_data) {
       if (tail == -1)
         return (tail = 1), (top = 0), arr[0] = new_data, true;
       if (tail == top)
@@ -100,7 +100,7 @@ int main () {
         break;
       
       case 'd' : case 'D' :
-        cout << "\nStack contents : "; queue.display(cout);
+        cout << "\nQueue contents : "; queue.display(cout);
         break;
       
       case 's' : case 'S' :

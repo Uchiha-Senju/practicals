@@ -1,13 +1,13 @@
 #include <iostream>
 using namespace std;
 
-void quickSort(int* arr, int end, bool descending = false, int start = 0) {
-  cout << "\nquickSorting\n";
-  
-  if (end - start <= 0)
+void quickSort(int* arr, int end, bool descending = false, int start = 0) {  
+  if (end - start <= 1)
     return;
+  
   int pivotPosition = start, temp;
-  for (int i = start; i < end; ++i) {
+  
+  for (int i = start; i < end - 1; ++i) {
     if (arr[i] < arr[end - 1] xor descending) {
       temp = arr[i];
       arr[i] = arr[pivotPosition];
@@ -40,9 +40,9 @@ int main() {
   quickSort(arr2, arr2_size, true);
   
   cout << "\n\nSorted Array 1 : [";
-  for (int i = 0; i < arr1_size - 1; ++i) cout << arr1[i] << ", "; cout << arr1[arr1_size - 1] << '\n';
+  for (int i = 0; i < arr1_size - 1; ++i) cout << arr1[i] << ", "; cout << arr1[arr1_size - 1] << "]\n";
   cout << "\n\nSorted Array 2 : [";
-  for (int i = 0; i < arr2_size - 1; ++i) cout << arr2[i] << ", "; cout << arr1[arr2_size - 1] << '\n';
+  for (int i = 0; i < arr2_size - 1; ++i) cout << arr2[i] << ", "; cout << arr2[arr2_size - 1] << "]\n";
   
   { // Merge arr1 and arr2
     arr3 = new int[arr1_size + arr2_size];
@@ -58,5 +58,8 @@ int main() {
   }
     
   cout << "\n\nMerger Array : [";
-  for (int i = 0; i < arr1_size + arr2_size - 1; ++i) cout << arr3[i] << ", "; cout << arr3[arr1_size + arr2_size - 1] << '\n';
+  for (int i = 0; i < arr1_size + arr2_size - 1; ++i) cout << arr3[i] << ", "; cout << arr3[arr1_size + arr2_size - 1] << "]\n";
+  
+  while (getchar() != '\n');
+  getchar();
 }

@@ -10,8 +10,10 @@ int main() {
   srand((unsigned)time(nullptr));
   int YEAR[no_of_years];
   
-  for (int i = 0; i < no_of_years; ++i)
-    /*cout << (*/YEAR[i] = max_emp_per_year * (float(rand()) / RAND_MAX)/*) << ", "*/;
+  cout << "Year-wise hiring data = [";
+  for (int i = 0; i < no_of_years - 1; ++i)
+    cout << (YEAR[i] = max_emp_per_year * (float(rand()) / RAND_MAX)) << ", ";
+  cout << (YEAR[no_of_years - 1] = max_emp_per_year * (float(rand()) / RAND_MAX)) << "]\n";
   
   int no_emp_sum = 0, exp_emp_sum = 0;
   cout << "\nYears where no employees were appointed (0-" << no_of_years - 1 << " AD) : ";

@@ -17,7 +17,7 @@ class StackWithArray {
       for (int i = 0; i < size; ++i)
         arr[i] = old_arr[i];
     }
-    StackWithArray(StackWithArray<T>& old_swa) : StackWithArray(old_swa.size, old_swa.arr) {
+    StackWithArray(const StackWithArray<T>& old_swa) : StackWithArray(old_swa.size, old_swa.arr) {
       top = old_swa.top;
     }
     
@@ -26,7 +26,7 @@ class StackWithArray {
         return T();
       return arr[--top];
     }
-    bool push(T new_data) {
+    bool push(const T& new_data) {
       if (top == size)
         return false;
       return arr[top++] = new_data, true;

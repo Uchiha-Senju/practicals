@@ -10,7 +10,7 @@ class Student {
     unsigned int Roll_no;
     
     Student() {}
-    void copy(Student& stu) {
+    void copy(const Student& stu) {
       int i;
       for (i = 0; stu.Name[i] != '\0' and  i < 50; ++i) {
         Name[i] = stu.Name[i];
@@ -18,10 +18,10 @@ class Student {
       Name[i] = '\0';
       Roll_no = stu.Roll_no;
     }
-    Student(Student& stu) {
+    Student(const Student& stu) {
       copy(stu);
     }
-    Student& operator=(Student& stu) {
+    Student& operator=(const Student& stu) {
       copy(stu);
       return *this;
     }
@@ -66,7 +66,7 @@ class LinkedList {
       Node* previous;
       const int check;
       
-      Node(Student& stu, Node* prev) : check(0x1234abcd) {
+      Node(const Student& stu, Node* prev) : check(0x1234abcd) {
         student = stu;
         next = nullptr;
         previous = prev;
@@ -75,11 +75,15 @@ class LinkedList {
         next = nullptr;
         previous = prev;
       }
-      Node* makeNext(Student& stu) {
-        return next = new Node(stu, this);
+      Node* makeNext(const Student& stu) {
+        Node* new_next = new Node(stu, this);
+        if (new_next != nullptr) next = new_next;
+        return new_next;
       }
       Node* makeNext(){
-        return next = new Node(this);
+        Node* new_next = new Node(this);
+        if (new_next != nullptr) next = new_next;
+        return new_next;
       }
   };
 
@@ -93,7 +97,7 @@ class LinkedList {
     else
       index = index % length;
     Node* cur;
-    if (index < length - index) {
+    if (2 * index < length) {
       cur = first;
       for (int i = 1; i <=index; i++) {
         cur = cur->next;
@@ -109,10 +113,10 @@ class LinkedList {
   
   public: 
     LinkedList(unsigned int len) {
-      length = length;
+      length = len;
       first = new Node(nullptr);
       last = first;
-      for (int i = 1; i < len; ++i) {
+      for (int i = 1; i < length; ++i) {
         last = last->makeNext();
       }
     }
@@ -128,25 +132,35 @@ class LinkedList {
     Student& operator[] (int index) {
       return getNode(index)->student;
     }
-    void append(Student& stu) {
+    bool append(const Student& stu) {
       if (last == nullptr) {
         last = new Node(stu, nullptr);
         first = last;
+        if (last == nullptr)
+          return false;
       } else {
-        last = last->makeNext(stu);
+        Node* new_last = last->makeNext(stu);
+        if (new_last == nullptr) return false;
+        last = new_last;
       }
       ++length;
+      return true;
     }
-    void prepend(Student& stu) {
+    bool prepend(const Student& stu) {
       if (last == nullptr) {
         first = last = new Node(stu, nullptr);
+        if (first == nullptr)
+          return false;
       } else {
         Node* new_node = new Node(stu, nullptr);
+        if (new_node == nullptr)
+          return false;
         new_node->next = first;
         first->previous = new_node;
         first = new_node;
       }
       ++length;
+      return true;
     }
     void remove(unsigned int index) {
       Node* cur = getNode(index);
@@ -157,23 +171,23 @@ class LinkedList {
       delete cur;
       --length;
     }
-    void insert(unsigned int index, Student& stu) {
-      if (index == length) {
-        append(stu);
-        return;
-      } else if (index == 0) {
-        prepend(stu);
-        return;
-      }
+    bool insert(unsigned int index, const Student& stu) {
+      if (index == length) 
+        return append(stu);
+      else if (index == 0) 
+        return prepend(stu);
+      
       Node* cur = getNode(index);
       if (cur == nullptr)
-        return;
+        return false;
       Node* new_node = new Node(stu, nullptr);
+      if (new_node == nullptr)
+        return false;
       
       new_node->next = cur;
       new_node->previous = cur->previous;
       new_node->previous->next = new_node;
-      new_node->next->previous = new_node;
+      cur->previous = new_node;
       ++length;
     }
     void truncate(unsigned int end) {
@@ -236,17 +250,17 @@ class LinkedList {
     void sort(Functor& func) {
       class Dummy {
         public : 
-          void quickSort(LinkedList* arr, unsigned int start, unsigned int end, Functor& func) {
+          void quickSort(LinkedList& arr, unsigned int start, unsigned int end, Functor& func) {
             if (end - start <= 1) 
               return;
             int pivotIndex = start;
             for (int i = start; i < end; ++i) {
-              if (func((*arr)[i], (*arr)[end - 1])) {
-                arr->swap(i, pivotIndex);
+              if (func(arr[i], arr[end - 1])) {
+                arr.swap(i, pivotIndex);
                 ++pivotIndex;
               }
             }
-            arr->swap(pivotIndex, end - 1);
+            arr.swap(pivotIndex, end - 1);
             quickSort(arr, start, pivotIndex, func);
             quickSort(arr, pivotIndex + 1, end, func);
           }
@@ -308,7 +322,7 @@ int main() {
         records.list.insert(number, stu);
         break;
       case '3' :
-        cout << "\nRemove from index (0-" << records.list.len() << ") : "; cin >> number;
+        cout << "\nRemove from index (0-" << records.list.len() - 1 << ") : "; cin >> number;
         records.list.remove(number);
         break;
       case '4' : {
