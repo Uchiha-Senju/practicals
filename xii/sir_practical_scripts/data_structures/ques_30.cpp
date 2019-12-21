@@ -105,7 +105,7 @@ class LinkedList {
     } else {
       cur = last;
       for (int i = length - 2; i >= index; i--) {
-        cur = cur->next;
+        cur = cur->previous;
       }
     }
     return cur;
@@ -206,6 +206,7 @@ class LinkedList {
       if (start >= end)
         return;
       truncate(end);
+      
       Node* cur = first;
       Node* final_node;
       for (int i = 0; i < start; ++i) {
@@ -228,11 +229,41 @@ class LinkedList {
     }
     void swap(unsigned int i_1, unsigned int i_2) {
       Node* temp;
+      // Ensure that i_1 <= i_2 
+      if (i_1 > i_2) {
+        unsigned int temp = i_1;
+        i_1 = i_2;
+        i_2 = temp;
+      }
+      if (i_1 == i_2) return;
       Node* node_1 = getNode(i_1);
       Node* node_2 = getNode(i_2);
       if (node_1 == nullptr or node_2 == nullptr) 
         return;
       
+      // Check if list markers need to be changed
+      if (i_1 == 0)
+        first = node_2;
+      else if (i_1 == length - 1)
+        last = node_2;
+      if (i_2 == 0)
+        first = node_1;
+      else if (i_2 == length - 1)
+        last = node_1;
+      // Alternate behaviour for adjacent swaps
+      if (i_1 + 1 == i_2) {
+        node_1->next = node_2->next;
+        node_2->previous = node_1->previous;
+        
+        node_1->previous = node_2;
+        node_2->next = node_1;
+        
+        if (node_1->next != nullptr) node_1->next->previous = node_1;
+        if (node_2->previous != nullptr) node_2->previous->next = node_2;
+        
+        return;
+      }
+      // Standard swap behaviour
       temp = node_1->previous;
       node_1->previous = node_2->previous;
       node_2->previous = temp;
@@ -240,12 +271,12 @@ class LinkedList {
       temp = node_1->next;
       node_1->next = node_2->next;
       node_2->next = temp;
+      // Correct neighbours addresses
+      if (node_1->next != nullptr) node_1->next->previous = node_1;
+      if (node_1->previous != nullptr) node_1->previous->next = node_1;
       
-      node_1->next->previous = node_1;
-      node_1->previous->next = node_1;
-      
-      node_2->next->previous = node_2;
-      node_2->previous->next = node_2;
+      if (node_2->next != nullptr) node_2->next->previous = node_2;
+      if (node_2->previous != nullptr) node_2->previous->next = node_2;
     }
     void sort(Functor& func) {
       class Dummy {
@@ -254,7 +285,7 @@ class LinkedList {
             if (end - start <= 1) 
               return;
             int pivotIndex = start;
-            for (int i = start; i < end; ++i) {
+            for (int i = start; i < end - 1; ++i) {
               if (func(arr[i], arr[end - 1])) {
                 arr.swap(i, pivotIndex);
                 ++pivotIndex;
@@ -265,7 +296,7 @@ class LinkedList {
             quickSort(arr, pivotIndex + 1, end, func);
           }
       } dummy_dum_dum;
-      dummy_dum_dum.quickSort(this, 0, length, func);
+      dummy_dum_dum.quickSort(*this, 0, length, func);
     }
 };
 
@@ -300,15 +331,7 @@ int main() {
   unsigned int number;
   char choice;
   do {
-    cout << "\n\nEnter choice : \n";
-    cout << "\t1 - Display Records\n"
-         << "\t2 - Insert Record\n"
-         << "\t3 - Remove Record\n"
-         << "\t4 - Search by Name\n"
-         << "\t5 - Search by Roll no.\n"
-         << "\t6 - Sort by Name\n"
-         << "\t7 - Sort by Roll no.\n"
-         << "\t8 - Exit\n";
+    cout << "\n\nEnter choice : ";
     cin >> choice;
     
     switch(choice) {
@@ -364,10 +387,21 @@ int main() {
         records.sortByRoll();
         break;
       case '8' :
-        cout << "Bye\n";
+        cout << "\t1 - Display Records\n"
+             << "\t2 - Insert Record\n"
+             << "\t3 - Remove Record\n"
+             << "\t4 - Search by Name\n"
+             << "\t5 - Search by Roll no.\n"
+             << "\t6 - Sort by Name\n"
+             << "\t7 - Sort by Roll no.\n"
+             << "\t8 - Print this help message\n"
+             << "\t9 - Exit\n";
+        break;
+      case '9' :
+        cout << "\tBye\n";
         break;
       default :
-        cout << "Invalid option, Try again\n\n";
+        cout << "\tInvalid option, use '8' for help \n\n";
     }
-  } while (choice != '8');
+  } while (choice != '9');
 }
