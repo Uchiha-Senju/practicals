@@ -2,68 +2,130 @@
   #define VARAD_GRAPH_H_INCLUDED
   
   #include "list.h"
+  #include <iostream>
+  #include <iomanip>
   
   namespace graph_h {
+    // Add const to type if it is a pointer
+    template <class T>
+    struct AddConstToType {
+      typedef T type;
+    };
+    template <class T>
+    struct AddConstToType<T*> {
+      typedef const T* type;
+    };
+    
     template <class T>
     class Functor {
-      virtual bool function(T& a, T& b) = 0;
-      inline bool operator(T& a, T& b) {
-        return function(a, b);
-      }
-    }
+      public :
+        virtual bool function(const typename graph_h::AddConstToType<T>::type& a, const typename graph_h::AddConstToType<T>::type& b) const = 0;
+        inline bool operator()(const typename graph_h::AddConstToType<T>::type& a, const typename graph_h::AddConstToType<T>::type& b) const {
+          return function(a, b);
+        }
+    };
   }
   
   template <class T>
   class Graph {
-    class Vertex {
-      
-      T data;
-      
-      list<Vertex*> edges;
-      
-      Vertex() : data(), edges() {}
-      Vertex(Vertex* edge_list, unsigned int edge_count) : edges(edge_list, edge_count) {}
-      Vertex(Vertex& old_vertex) : data(old_vertex.data), edges(old_vertex.edges) {}
-      ~Vertex() {
-        data.~T();
-        edge_list.~list();
-      }
-      
-      bool isConnected() {
-        return edges.len() != 0;
-      }
-      bool isConnectedWithVertex(Vertex* other_vertex) {
-        return edges.includes(other_vertex) != -1;
-      }
-      bool isConnectedWithVertex(Vertex& other_vertex) {
-        return isConnectedWithVertex(&other_vertex);
-      }
-      void connectTo(Vertex* other_vertex) {
-        edges.append(other_vertex);
-      }
-      void disconnectFrom(Vertex* other_vertex) {
-        int i = edges.includes(other_vertex);
-        if (i != -1)
-          edges.remove(i);
-      }
-      void connectTo(Vertex& other_vertex) {
-        connectTo(&other_vertex);
-      }
-      void disconnectFrom(Vertex& other_vertex) {
-        disconnectFrom(&other_vertex);
-      }
-    };
-    
     public :
-      list<Vertex> vertex_list;
+      class Vertex {
+        public : 
+          T data;
+          list<Vertex*> edges;
+          // Vertex Constructors
+          Vertex() : data(), edges() {}
+          // Weird cast of const T new_data to T so that it can be copied to data
+          Vertex(const typename graph_h::AddConstToType<T>::type& new_data) : data((T)new_data), edges() {}
+          Vertex(const typename graph_h::AddConstToType<T>::type& new_data, Vertex** edge_list, unsigned int edge_count) 
+            : data((T)new_data), edges(edge_list, edge_count) {}
+          Vertex(const Vertex& old_vertex) : data(old_vertex.data), edges(old_vertex.edges) {}
+          // Equivalence checks are dependent on the Vertex data, not the edges
+          inline bool operator==(const Vertex& other_vertex) const {
+            return data == other_vertex.data;
+          }
+          inline bool operator!=(const Vertex& other_vertex) const {
+            return not (*this == other_vertex.data) ;
+          }
+          // Functions for edge management
+          bool isConnected() const {
+            return edges.len() != 0;
+          }
+          bool isConnectedWithVertex(const Vertex* const other_vertex) const {
+            if (other_vertex != nullptr and other_vertex != this)
+              return edges.includes(other_vertex) != -1;
+            return false;
+          }
+          bool isConnectedWithVertex(const Vertex& other_vertex) const {
+            return isConnectedWithVertex(&other_vertex);
+          }
+          void connectTo(const Vertex* const other_vertex) {
+            if (other_vertex != nullptr and other_vertex != this) {
+              if (edges.includes(other_vertex) == -1)
+                edges.append(other_vertex);
+            }
+          }
+          void disconnectFrom(const Vertex* const other_vertex) {
+            if (other_vertex != nullptr and other_vertex != this) {
+              int i = edges.includes(other_vertex);
+              if (i != -1)
+                edges.remove(i);
+            }
+          }
+          void connectTo(const Vertex& other_vertex) {
+            connectTo(&other_vertex);
+          }
+          void disconnectFrom(const Vertex& other_vertex) {
+            disconnectFrom(&other_vertex);
+          }
+          // Vertex Destructor
+          ~Vertex() {
+            data.~T();
+            for (typename list<Vertex*>::Iterator connected_vertex(edges); not connected_vertex.hasEnded(); connected_vertex++)
+              connected_vertex()->disconnectFrom(this);
+            edges.~list();
+          }
+      };
+    
+      list<Vertex> vertices;
       
-      Graph() : vertex_list() {}
-      Graph(Graph& old_graph) : vertex_list(old_graph.vertex_list) {}
+      Graph() : vertices() {}
+      Graph(Graph& old_graph) : vertices(old_graph.vertices) {}
       
-      void makeConnections(graph_h::Functor& func) {
-        for (list<Vertex>::Iterator i(vertex_list); not i.hasEnded(); i++) 
-          for (list<Vertex>::Iterator j = i + 1; not j.hasEnded(); j++) 
-            if (func(i().data, j.data())) {
+      void makeVertex(const typename graph_h::AddConstToType<T>::type& data) {
+        vertices.append(Vertex(data));
+      }
+      void removeVertex(unsigned int index) {
+        vertices.remove(index);
+      }
+      
+      void connectVertices(unsigned int i_1, unsigned int i_2) {
+        Vertex* v_1 = &(vertices[i_1]);
+        Vertex* v_2 = &(vertices[i_2]);
+        
+        if (v_1 == v_2 or v_1 == nullptr or v_2 == nullptr)
+          return;
+        
+        v_1->connectTo(v_2);
+        v_2->connectTo(v_1);
+      }
+      void disconnectVertices(unsigned int i_1, unsigned int i_2) {
+        Vertex* v_1 = &(vertices[i_1]);
+        Vertex* v_2 = &(vertices[i_2]);
+        
+        if (v_1 == v_2 or v_1 == nullptr or v_2 == nullptr)
+          return;
+        
+        v_1->disconnectFrom(v_2);
+        v_2->disconnectFrom(v_1);
+      }
+      
+      void makeConnections(const graph_h::Functor<T>& func) {
+        // Cycle through each possible vertex pair and connect them
+        // if the given function returns true
+        for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) 
+          for (typename list<Vertex>::Iterator j = i + 1; not j.hasEnded(); j++) 
+            if (func(i().data, j().data)) {
               i().connectTo(j());
               j().connectTo(i());
             }
@@ -72,26 +134,48 @@
       list<list<Vertex*>> colorVertices() {
         list<list<Vertex*>> color_list;
         
-        for (list<Vertex>::Iterator i(vertex_list); not i.hasEnded(); i++) {
-          list<list<Vertex*>>::Iterator color(color_list);
+        for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) {
+          typename list<list<Vertex*>>::Iterator color(color_list);
           // Determine if vertex is connected to any other colored vertex
-          bool is_connected;
-          for (is_connected; not (color.hasEnded() or is_connected); color++)
-            for (list<Vertex*>::Iterator j(color()), isConnected = false; not (j.hasEnded() or is_connected); ++j)
+          bool is_connected = true;
+          // Come out color-checking loop if colors have run out or 
+          // the current vertex is not connected to any vertex of the given color
+		  // 
+		  // Don't increment color if none are connected
+          for (; not (color.hasEnded() or not is_connected); is_connected ? color++ : color)
+            // Come out of vertex-connection-checking loop
+            // if there are no more vertices to check or
+            // the current vertex is connected to any vertex of the given color
+            for (typename list<Vertex*>::Iterator j( (is_connected = false, color()) ); not (j.hasEnded() or is_connected); ++j)
               is_connected |= i().isConnectedWithVertex(j());
-          if (color.hasEnded() and is_connected)
+          // If current vertex was not connected to any in the last color,
+          // switch back to it
+          if (color.hasEnded() and not is_connected)
             color.last();
           if (not color.hasEnded()) {
-            color.append(i())
+            // Color the vertex if an unconnected color was found
+            color().append(&i());
           } else {
+            // Make a new color if the vertex is connected to all the current colors
             list<Vertex*> new_color;
-            new_color.append(i());
+            new_color.append(&i());
             color_list.append(new_color);
           }
         }
         
         return color_list;
       }
-  }
+      
+      void displayVertices(std::ostream& out_stream) const {
+         out_stream << "\nIndex  Value  Connections (indices)";
+         out_stream << "\n=====  =====  =====================";
+         
+         for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); ++i) {
+           out_stream << '\n' << std::setw(5) << i.position << "  " << std::setw(5) << i().data << "  ";
+           for (typename list<Vertex*>::Iterator j(i().edges); not j.hasEnded(); ++j)
+             out_stream << vertices.includes(*j()) << ", ";
+         }
+      }
+  };
   
 #endif

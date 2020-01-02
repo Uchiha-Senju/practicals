@@ -2,15 +2,26 @@
   #define VARAD_LIST_H_INCLUDED
   
   namespace list_h {
-    const int check_num 0x1234abcd;
+    const int check_num = 0x1234abcd;
+    
+    // Makke type const if it is a pointer
+    template <class T>
+    struct AddConstToType {
+      typedef T type;
+    };
+    template <class T>
+    struct AddConstToType<T*> {
+      typedef const T* type;
+    };
     
     template <class T>
     class Functor {
-      virtual bool function(T& a, T& b) = 0;
-      inline bool operator(T& a, T& b) {
-        return function(a, b);
-      }
-    }
+      public :
+        virtual bool function(const typename list_h::AddConstToType<T>::type& a, const typename list_h::AddConstToType<T>::type& b) const = 0;
+        inline bool operator()(const typename list_h::AddConstToType<T>::type& a, const typename list_h::AddConstToType<T>::type& b) const {
+          return function(a, b);
+        }
+    };
   }
   
   
@@ -23,29 +34,21 @@
         Node* previous;
         const int check;
         
-        Node(const T& new_data, Node* prev) : check(list_h::check_num) {
-          data = new_data;
-          next = nullptr;
-          previous = prev;
-        }
-        Node(Node* prev) : check(list_h::check_num) {
-          next = nullptr;
-          previous = prev;
-        }
-        Node(Node& old_node, Node* prev = nullptr) {
-          Node(old_node.data, prev)
-        }
+        Node() : check(list_h::check_num) {}
+        // Weird cast of const T new_data to T so that it can be copied to data
+        Node(const typename list_h::AddConstToType<T>::type& new_data, Node* prev, Node* nxt = nullptr)
+          : check(list_h::check_num), data((T)new_data), previous(prev), next(nxt) {}
+        Node(Node* prev) : check(list_h::check_num), previous(prev), next(nullptr) {}
+        Node(const Node& old_node, Node* prev = nullptr) : Node(old_node.data, prev) {}
         ~Node() {
           data.~T();
-          next = last = nullptr;
-          int* check_overwrite = new int(&check);
-          check_overwrite = 0;
+          next = previous = nullptr;
         }
         
-        bool isOk() {
+        bool isOk() const {
           return check == list_h::check_num;
         }
-        Node* makeNext(const T& new_data) {
+        Node* makeNext(const typename list_h::AddConstToType<T>::type& new_data) {
           Node* new_next = new Node(new_data, this);
           if (new_next != nullptr) next = new_next;
           return new_next;
@@ -61,7 +64,7 @@
     Node* last;
     unsigned int length;
     
-    Node* getNode(int index) {
+    Node* getNode(int index) const {
       if (index < 0) 
         index = index % length + length;
       else
@@ -82,9 +85,10 @@
     }
     
     public: 
-      list(T* data_arr, unsigned int len) {
+      list() : first(nullptr), last(nullptr), length(0) {}
+      list(const T* const data_arr, unsigned int len) {
         length = len;
-        first = new Node(data_arr[0]););
+        first = new Node(data_arr[0]);
         if (first == nullptr)
           return;
         last = first;
@@ -110,18 +114,13 @@
             last = new_last;
         }
       }
-      list() {
-        first = nullptr;
-        last = nullptr;
-        length = 0;
-      }
-      list(list& old_list) {
-        length = list.length;
+      list& operator=(const list& old_list) {
+        length = old_list.length;
         if (length != 0) {
           Node* read_head = old_list.first;
           last = first = new Node(*read_head, nullptr);
           if (first == nullptr)
-            return;
+            return *this;
           read_head = read_head->next;
           while (read_head != nullptr) {
             Node* new_last = last->makeNext(read_head->data);
@@ -133,99 +132,121 @@
         } else {
           first = last = nullptr;
         }
+        return *this;
+      }
+      list(const list& old_list) {
+        *this = old_list;
       }
       ~list() {
         if (length != 0) {
           length = 0;
           Node* read_head = first->next;
-          first.~Node(); delete first;
+          first->~Node(); delete first;
           while (read_head != nullptr) {
             first = read_head; read_head = read_head->next;
-            first.~Node(); delete first;
+            first->~Node(); delete first;
           }
           first = last = nullptr;
         }
       }
       
-      class Iterator() {
+      class Iterator {
         const list& parent_list;
         Node* current;
+        
         public :
           int position;
-                
-          Iterator first() {
-            current = parent_list.first;
-            position = 0
-          }
-          Iterator last() {
-            current = parent_list.last;
-            position = length - 1
-          }
-          bool hasEnded() {
-            return current == nullptr or position >= length or position < 0;
-          }
-          bool operator==(Node* node) {
-            return current == node;
-          }
-          bool operator==(Iterator& i) {
-            return current == i.current;
-          }
-          bool operator!=(Node* node) {
-            return not current == node;
-          }
-          bool operator!=(Iterator& i) {
-            return not current == i.current;
-          }
-          Iterator& operator++() {
-            current = current->next;
-            return *this;
-          }
-          Iterator& operator--() {
-            current = current->prev;
-            return *this;
-          }
-          Iterator& operator+(int i) {
-            Iterator new_iterator(*this);
-            if (i < 0)
-              for(; i < 0; i++)
-                new_iterator--;
-            else (i > 0)
-              for(; i > 0; i--)
-                new_iterator++;
-            return new_iterator;
-          }
-          Iterator& operator-(int i) {
-            return *this + (-i);
-          }
           
-          
-          T& operator() {
-            return current->data;
-          }
-          
-          Iterator(list& papa, bool start_at_first = true) : parent_list(papa) {
+          Iterator(const list& papa, bool start_at_first = true) : parent_list(papa) {
             if (start_at_first)
               first();
             else 
               last();
           };
-          Iterator(Iterator& i) : parent_list(i.parent_list), current(i.current), position(i.position) {}
-          Iterator& operator=(Iterator& i) {
+          Iterator(const Iterator& i) : parent_list(i.parent_list), current(i.current), position(i.position) {}
+          Iterator& operator=(const Iterator& i) {
             if (&parent_list == &(i.parent_list)) {
               current = i.current;
               position = i.position;
             }
             return *this;
           }
-      }
+        
+        private :
+          Iterator(const list& pops, Node* cur, int pos) : parent_list(pops), current(cur), position(pos) {}
+        
+        public :
+          Iterator first() {
+            current = parent_list.first;
+            position = 0;
+          }
+          Iterator last() {
+            current = parent_list.last;
+            position = parent_list.length - 1;
+          }
+          bool hasEnded() const {
+            return current == nullptr or position >= parent_list.length or position < 0;
+          }
+          bool operator==(const Node* const node) const {
+            return current == node;
+          }
+          bool operator==(const Iterator& i) const {
+            return current == i.current;
+          }
+          bool operator!=(const Node* const node) const {
+            return not current == node;
+          }
+          bool operator!=(const Iterator& i) const {
+            return not current == i.current;
+          }
+          Iterator& operator++() {
+            if (current != nullptr) current = current->next;
+            ++position;
+            return *this;
+          }
+          Iterator& operator++(int) {
+            return ++(*this);
+          }
+          inline Iterator& operator--() {
+            if (current != nullptr) current = current->previous;
+            --position;
+            return *this;
+          }
+          inline Iterator& operator--(int) {
+            return --(*this);
+          }
+          Iterator operator+(int index) {
+            Node* new_current = current;
+            if (index < 0)
+              for(int i = index; i < 0; i++) {
+                new_current = new_current->previous;
+                if (new_current == nullptr)
+                  break;
+              }
+            else 
+              for (int i = index; i > 0; i--) {
+                new_current = new_current->next;
+                if (new_current == nullptr)
+                  break;
+              }
+            return Iterator(parent_list, new_current, position + index);
+          }
+          inline Iterator operator-(int i) {
+            return *this + (-i);
+          }
+          
+          T& operator()() const {
+            return current->data;
+          }
+      };
       
-      unsigned int len() {
+      inline unsigned int len() const {
         return length;
       }
-      T& operator[] (int index) {
+      T& operator[] (int index) const {
         return getNode(index)->data;
       }
-      bool append(const T& new_data) {
+      bool append(const typename list_h::AddConstToType<T>::type& new_data) {
         if (last == nullptr) {
           last = new Node(new_data, nullptr);
           first = last;
@@ -239,7 +260,7 @@
         ++length;
         return true;
       }
-      bool prepend(const T& new_data) {
+      bool prepend(const typename list_h::AddConstToType<T>::type& new_data) {
         if (last == nullptr) {
           first = last = new Node(new_data, nullptr);
           if (first == nullptr)
@@ -259,12 +280,18 @@
         Node* cur = getNode(index);
         if (cur == nullptr)
           return;
-        cur->next->previous = cur->previous;
-        cur->previous->next = cur->next;
+        if (cur->next != nullptr) cur->next->previous = cur->previous;
+        if (cur->previous != nullptr) cur->previous->next = cur->next;
+        
+        if (cur == first)
+          first = cur->next;
+        if (cur == last)
+          last = cur->previous;
+        
         delete cur;
         --length;
       }
-      bool insert(unsigned int index, const T& new_data) {
+      bool insert(unsigned int index, const typename list_h::AddConstToType<T>::type& new_data) {
         if (index == length) 
           return append(new_data);
         else if (index == 0) 
@@ -279,7 +306,7 @@
         
         new_node->next = cur;
         new_node->previous = cur->previous;
-        new_node->previous->next = new_node;
+        if (new_node->previous != nullptr) new_node->previous->next = new_node;
         cur->previous = new_node;
         ++length;
       }
@@ -312,7 +339,7 @@
         length = end - start;
         if (step != 1 or step != 0) {
           for (int i = 0, offset = 0; i < length; ++i) {
-            if (i + offset % step != 0) {
+            if ((i + offset) % step != 0) {
               remove(i);
               ++offset; --i;
             }
@@ -371,10 +398,10 @@
         if (node_2->next != nullptr) node_2->next->previous = node_2;
         if (node_2->previous != nullptr) node_2->previous->next = node_2;
       }
-      void sort(Functor& func) {
+      void sort(const list_h::Functor<T>& func) {
         class Dummy {
           public : 
-            void quickSort(LinkedList& arr, unsigned int start, unsigned int end, list_h::Functor<T>& func) {
+            void quickSort(list& arr, unsigned int start, unsigned int end, const list_h::Functor<T>& func) {
               if (end - start <= 1) 
                 return;
               int pivotIndex = start;
@@ -391,10 +418,10 @@
         } dummy_dum_dum;
         dummy_dum_dum.quickSort(*this, 0, length, func);
       }
-      int includes(T& search_data) {
+      int includes(const typename list_h::AddConstToType<T>::type& search_data) const {
         for (Iterator i(*this); not i.hasEnded(); i++) 
           if (i() == search_data and i.position < length)
-            return position;
+            return i.position;
         
         return -1;
       }
