@@ -8,9 +8,9 @@ struct Employee {
   char Name[20];
   float Salary;
   void display(ostream& out_strm) {
-    cout << "\nEmployee " << EmpNo << " : ";
-    cout << "\n\tName : " << Name;
-    cout << "\n\tSalary : " << Salary;
+    out_strm << "\nEmployee " << EmpNo << " : ";
+    out_strm << "\n\tName : " << Name;
+    out_strm << "\n\tSalary : " << Salary;
   }
   void getData(istream& in_strm, ostream& out_strm) {
     out_strm << "\nEnter Employee Details :";

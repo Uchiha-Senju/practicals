@@ -14,7 +14,7 @@ namespace commands {
   const char quit = 'q';
 }
 
-class intAreCoprime : public graph_h::Functor<int> {
+class intAreCoprime : public graph_h::BinaryFunctor<int> {
   bool function(const int& a, const int& b) const {
     int big_num = (a>b) ? a : b;
     int small_num = (not (a>b)) ? a : b;
@@ -38,7 +38,14 @@ int main() {
     
     switch(choice) {
       case commands::display :
-        graph.displayVertices(cout);
+        cout << "\nIndex  Value       Connections (indices)";
+        cout << "\n=====  ==========  =====================";
+        
+        for (typename List<Graph<int>::Vertex>::Iterator i(graph.vertices); not i.hasEnded(); ++i) {
+          cout << '\n' << std::setw(5) << i.position << "  " << std::setw(10) << i().data << "  ";
+          for (typename List<Graph<int>::Vertex*>::Iterator j(i().edges); not j.hasEnded(); ++j)
+            cout << graph.vertices.includes(*j()) << ", ";
+        }
         break;
       case commands::add :
         cout << "\nEnter value to be inserted : ";
@@ -64,10 +71,10 @@ int main() {
         }
         break;
       case commands::color : {
-        list<list<Graph<int>::Vertex*>> color_scheme = graph.colorVertices();
-        for (typename list<list<Graph<int>::Vertex*>>::Iterator i(color_scheme); not i.hasEnded(); ++i) {
+        List<List<Graph<int>::Vertex*>> color_scheme = graph.colorVertices();
+        for (typename List<List<Graph<int>::Vertex*>>::Iterator i(color_scheme); not i.hasEnded(); ++i) {
           cout << "\nColor " << i.position << " - ";
-          for (typename list<Graph<int>::Vertex*>::Iterator j(i()); not j.hasEnded(); ++j) 
+          for (typename List<Graph<int>::Vertex*>::Iterator j(i()); not j.hasEnded(); ++j) 
             cout << graph.vertices.includes(*(j())) << ", ";
         }
       }
@@ -81,7 +88,7 @@ int main() {
              << "\t" << commands::procedural_connect << " - Connect vertices by relative prime-ness\n"
              << "\t" << commands::color << " - Color graph\n"
              << "\t" << commands::help << " - Print this help message\n"
-             << "\t" << commands::quit << " - QUIT";
+             << "\t" << commands::quit << " - Quit the program";
         break;
       case commands::quit :
         cout << "\tBye\n";

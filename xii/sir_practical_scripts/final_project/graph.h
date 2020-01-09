@@ -17,10 +17,10 @@
     };
     
     template <class T>
-    class Functor {
+    class BinaryFunctor {
       public :
-        virtual bool function(const typename graph_h::AddConstToType<T>::type& a, const typename graph_h::AddConstToType<T>::type& b) const = 0;
-        inline bool operator()(const typename graph_h::AddConstToType<T>::type& a, const typename graph_h::AddConstToType<T>::type& b) const {
+        virtual bool function(const typename AddConstToType<T>::type& a, const typename AddConstToType<T>::type& b) const = 0;
+        inline bool operator()(const typename AddConstToType<T>::type& a, const typename AddConstToType<T>::type& b) const {
           return function(a, b);
         }
     };
@@ -32,7 +32,7 @@
       class Vertex {
         public : 
           T data;
-          list<Vertex*> edges;
+          List<Vertex*> edges;
           // Vertex Constructors
           Vertex() : data(), edges() {}
           // Weird cast of const T new_data to T so that it can be copied to data
@@ -81,13 +81,13 @@
           // Vertex Destructor
           ~Vertex() {
             data.~T();
-            for (typename list<Vertex*>::Iterator connected_vertex(edges); not connected_vertex.hasEnded(); connected_vertex++)
+            for (typename List<Vertex*>::Iterator connected_vertex(edges); not connected_vertex.hasEnded(); connected_vertex++)
               connected_vertex()->disconnectFrom(this);
-            edges.~list();
+            edges.~List();
           }
       };
     
-      list<Vertex> vertices;
+      List<Vertex> vertices;
       
       Graph() : vertices() {}
       Graph(Graph& old_graph) : vertices(old_graph.vertices) {}
@@ -120,22 +120,22 @@
         v_2->disconnectFrom(v_1);
       }
       
-      void makeConnections(const graph_h::Functor<T>& func) {
+      void makeConnections(const graph_h::BinaryFunctor<T>& func) {
         // Cycle through each possible vertex pair and connect them
         // if the given function returns true
-        for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) 
-          for (typename list<Vertex>::Iterator j = i + 1; not j.hasEnded(); j++) 
+        for (typename List<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) 
+          for (typename List<Vertex>::Iterator j = i + 1; not j.hasEnded(); j++) 
             if (func(i().data, j().data)) {
               i().connectTo(j());
               j().connectTo(i());
             }
       }
       
-      list<list<Vertex*>> colorVertices() {
-        list<list<Vertex*>> color_list;
+      List<List<Vertex*>> colorVertices() {
+        List<List<Vertex*>> color_list;
         
-        for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) {
-          typename list<list<Vertex*>>::Iterator color(color_list);
+        for (typename List<Vertex>::Iterator i(vertices); not i.hasEnded(); i++) {
+          typename List<List<Vertex*>>::Iterator color(color_list);
           // Determine if vertex is connected to any other colored vertex
           bool is_connected = true;
           // Come out color-checking loop if colors have run out or 
@@ -146,7 +146,7 @@
             // Come out of vertex-connection-checking loop
             // if there are no more vertices to check or
             // the current vertex is connected to any vertex of the given color
-            for (typename list<Vertex*>::Iterator j( (is_connected = false, color()) ); not (j.hasEnded() or is_connected); ++j)
+            for (typename List<Vertex*>::Iterator j( (is_connected = false, color()) ); not (j.hasEnded() or is_connected); ++j)
               is_connected |= i().isConnectedWithVertex(j());
           // If current vertex was not connected to any in the last color,
           // switch back to it
@@ -157,24 +157,13 @@
             color().append(&i());
           } else {
             // Make a new color if the vertex is connected to all the current colors
-            list<Vertex*> new_color;
+            List<Vertex*> new_color;
             new_color.append(&i());
             color_list.append(new_color);
           }
         }
         
         return color_list;
-      }
-      
-      void displayVertices(std::ostream& out_stream) const {
-         out_stream << "\nIndex  Value  Connections (indices)";
-         out_stream << "\n=====  =====  =====================";
-         
-         for (typename list<Vertex>::Iterator i(vertices); not i.hasEnded(); ++i) {
-           out_stream << '\n' << std::setw(5) << i.position << "  " << std::setw(5) << i().data << "  ";
-           for (typename list<Vertex*>::Iterator j(i().edges); not j.hasEnded(); ++j)
-             out_stream << vertices.includes(*j()) << ", ";
-         }
       }
   };
   
