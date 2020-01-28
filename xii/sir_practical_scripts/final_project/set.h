@@ -41,7 +41,6 @@
           Node(Node* prev) : check(set_h::check_num), previous(prev), next(nullptr) {}
           Node(const Node& old_node, Node* prev = nullptr) : Node(old_node.data, prev) {}
           ~Node() {
-            data.~T();
             next = previous = nullptr;
           }
           
@@ -135,11 +134,12 @@
           bool operator==(const Iterator& i) const {
             return current == i.current;
           }
+          // Defer to operator== and `not` it
           bool operator!=(const Node* const node) const {
-            return not current == node;
+            return not (*this == node);
           }
           bool operator!=(const Iterator& i) const {
-            return not current == i.current;
+            return not (*this == i);
           }
           Iterator& operator++() {
             if (current != nullptr) current = current->next;
@@ -176,9 +176,13 @@
           inline Iterator operator-(int i) {
             return *this + (-i);
           }
-          
+          // Get reference to element
           T& operator()() const {
             return current->data;
+          }
+          // Get copy of element
+          operator T() const {
+            return T(current->data);
           }
       };
       // Basic Functions
@@ -233,7 +237,18 @@
         for (int i = 0; i < len; ++i)
           add(data_arr[i]);
       }
+      ~Set() {
+        if (length != 0) {
+          for (Iterator i(*this, false); not i.hasEnded(); ) {
+            Node* current = i.current;
+            --i;
+            delete current;
+          }
+          first = last = nullptr;
+        }
+      }
       Set& operator=(const Set& old_set) {
+        this->~Set();
         length = old_set.length;
         if (length != 0) {
           for (Iterator i(old_set); not i.hasEnded(); ++i)
@@ -246,16 +261,6 @@
       }
       Set(const Set& old_set) : Set() {
         *this = old_set;
-      }
-      ~Set() {
-        if (length != 0) {
-          for (Iterator i(*this, false); not i.hasEnded(); ) {
-            Node* current = i.current;
-            --i;
-            delete current;
-          }
-          first = last = nullptr;
-        }
       }
       
       bool isASubset(const Set& maybe_subset) const {
@@ -284,10 +289,11 @@
       Set intersection(const Set& B) const {
         class Dummy : public set_h::UnaryFunctor<T> {
           const Set& other;
-          Dummy(const Set& another) : other(another) {}
           bool function (const typename set_h::AddConstToType<T>::type& a) const {
             return other.contains(a);
           }
+          public :
+            Dummy(const Set& another) : other(another) {}
         } dummy_dum(B);
         return subset(dummy_dum);
       }
@@ -297,7 +303,7 @@
           join.add(i());
         return join;
       }
-      bool disjoint(const Set& B) const {
+      bool isDisjoint(const Set& B) const {
         for (Iterator i(*this); not i.hasEnded(); i++)
           if (B.contains(i()))
             return false;
@@ -306,15 +312,16 @@
       Set difference(const Set& B) const {
         class Dummy : public set_h::UnaryFunctor<T> {
           const Set& other;
-          Dummy(const Set& another) : other(another) {}
           bool function (const typename set_h::AddConstToType<T>::type& a) const {
             return not other.contains(a);
           }
+          public:
+            Dummy(const Set& another) : other(another) {}
         } dummy_dum(B);
         return subset(dummy_dum);
       }
       Set symmetric_difference(const Set& B) const {
-        Set sym_diff(B);
+        Set sym_diff;
         for (Iterator i(*this); not i.hasEnded(); i++)
           if (not B.contains(i()))
             sym_diff.add(i());

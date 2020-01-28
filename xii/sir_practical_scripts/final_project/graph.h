@@ -37,13 +37,22 @@
           Vertex(const typename graph_h::AddConstToType<T>::type& new_data) : data((T)new_data), edges() {}
           Vertex(const typename graph_h::AddConstToType<T>::type& new_data, Vertex** edge_list, unsigned int edge_count) 
             : data((T)new_data), edges(edge_list, edge_count) {}
-          Vertex(const Vertex& old_vertex) : data(old_vertex.data), edges(old_vertex.edges) {}
-          // Equivalence checks are dependent on the Vertex data, not the edges
-          inline bool operator==(const Vertex& other_vertex) const {
-            return data == other_vertex.data;
+          Vertex& operator=(const Vertex& old_vertex) {
+            data = old_vertex.data;
+            edges = old_vertex.edges;
           }
+          Vertex(const Vertex& old_vertex) : data(old_vertex.data), edges(old_vertex.edges) {}
+          // Equivalence checks are dependent whether it is the same Vertex
+          // i.e. Different Vertices with same data are different
+          inline bool operator==(const Vertex& other_vertex) const {
+            return this == &other_vertex;
+          }
+          // Defer to operator==
           inline bool operator!=(const Vertex& other_vertex) const {
-            return not (*this == other_vertex.data) ;
+            return not (*this == other_vertex) ;
+          }
+          inline bool haveEqualData(const Vertex& other_vertex) const {
+            return data == other_vertex.data;
           }
           // Functions for edge management
           bool isConnected() const {
@@ -78,10 +87,10 @@
           }
           // Vertex Destructor
           ~Vertex() {
-            data.~T();
-            for (typename List<Vertex*>::Iterator connected_vertex(edges); not connected_vertex.hasEnded(); connected_vertex++)
-              connected_vertex()->disconnectFrom(this);
-            edges.~List();
+            for (typename List<Vertex*>::Iterator connected_vertex(edges); 
+                 not connected_vertex.hasEnded();
+                 connected_vertex++)
+                 connected_vertex()->disconnectFrom(this);
           }
       };
     

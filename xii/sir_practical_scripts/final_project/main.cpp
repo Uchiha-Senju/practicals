@@ -1,5 +1,6 @@
 #include <string.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "graph.h"
 #include "set.h"
@@ -206,7 +207,7 @@ int main () {
         Set<Subject> all_subjects;
         for (Set<Set<Subject>>::Iterator i(subject_choices); not i.hasEnded(); ++i) 
           all_subjects = all_subjects.join(i());;
-        // Make a new one
+        // Make a new graph
         for (Set<Subject>::Iterator i(all_subjects); not i.hasEnded(); ++i) 
           subjects.makeVertex(i());
         subjects.makeConnections(dummy_dum);

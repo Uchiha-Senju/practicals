@@ -42,7 +42,6 @@
           Node(Node* prev) : check(list_h::check_num), previous(prev), next(nullptr) {}
           Node(const Node& old_node, Node* prev = nullptr) : Node(old_node.data, prev) {}
           ~Node() {
-            data.~T();
             next = previous = nullptr;
           }
           
@@ -145,11 +144,12 @@
           bool operator==(const Iterator& i) const {
             return current == i.current;
           }
+          // Defer to operator==
           bool operator!=(const Node* const node) const {
-            return not current == node;
+            return not (*this == node);
           }
           bool operator!=(const Iterator& i) const {
-            return not current == i.current;
+            return not (*this == i);
           }
           Iterator& operator++() {
             if (current != nullptr) current = current->next;
@@ -186,9 +186,13 @@
           inline Iterator operator-(int i) {
             return *this + (-i);
           }
-          
+          // Get reference to element
           T& operator()() const {
             return current->data;
+          }
+          // Get copy of element
+          operator T() const {
+            return T(current->data);
           }
       };
       // Basic Functions
@@ -273,7 +277,18 @@
             last = new_last;
         }
       }
+      ~List() {
+        if (length != 0) {
+          for (Iterator i(*this, false); not i.hasEnded(); ) {
+            Node* current = i.current;
+            --i;
+            delete current;
+          }
+          first = last = nullptr;
+        }
+      }
       List& operator=(const List& old_list) {
+        this->~List();
         length = old_list.length;
         if (length != 0) {
           for (Iterator i(old_list); not i.hasEnded(); ++i)
@@ -286,16 +301,6 @@
       }
       List(const List& old_list) : List() {
         *this = old_list;
-      }
-      ~List() {
-        if (length != 0) {
-          for (Iterator i(*this, false); not i.hasEnded(); ) {
-            Node* current = i.current;
-            --i;
-            delete current;
-          }
-          first = last = nullptr;
-        }
       }
       
       bool insert(unsigned int index, const typename list_h::AddConstToType<T>::type& new_data) {
@@ -354,8 +359,9 @@
         
         if (start >= end)
           return;
+        // Delete end part
         truncate(end);
-        
+        // Delete before part
         Iterator i(*this);
         for ( i.first(); not i.hasEnded() and i.position < start; ) {
           Node* current = i.current;

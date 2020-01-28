@@ -15,7 +15,8 @@ class Student :
     self.subject_list = subject_list.copy()
 
   def printSelf(self) :
-    print(self.name, end='\n')
+    # Only 50 characters allowed
+    print(self.name[:50], end='\n')
     print(self.roll_no, end='\n')
     # Unpack `subject_list` into arguments for `print` and print each separated by a space
     print(*(self.subject_list), sep=' ', end='\n')

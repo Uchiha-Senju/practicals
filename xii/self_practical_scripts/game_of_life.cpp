@@ -2,64 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "vector.h"
+#include "cls.h"
 #include <time.h>
 using namespace std;
-
-// source - http://www.cplusplus.com/articles/4z18T05o/
-#if defined _WIN32
-    #include <windows.h>
-
-  void ClearScreen() {
-    HANDLE                     hStdOut;
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    DWORD                      count;
-    DWORD                      cellCount;
-    COORD                      homeCoords = { 0, 0 };
-
-    hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
-    if (hStdOut == INVALID_HANDLE_VALUE) return;
-
-    /* Get the number of cells in the current buffer */
-    if (!GetConsoleScreenBufferInfo( hStdOut, &csbi )) return;
-    cellCount = csbi.dwSize.X *csbi.dwSize.Y;
-
-    /* Fill the entire buffer with spaces */
-    if (!FillConsoleOutputCharacter(
-      hStdOut,
-      (TCHAR) ' ',
-      cellCount,
-      homeCoords,
-      &count
-      )) return;
-
-    /* Fill the entire buffer with the current colors and attributes */
-    if (!FillConsoleOutputAttribute(
-      hStdOut,
-      csbi.wAttributes,
-      cellCount,
-      homeCoords,
-      &count
-      )) return;
-
-    /* Move the cursor home */
-    SetConsoleCursorPosition( hStdOut, homeCoords );
-  }
-#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__) ||  defined (__APPLE__)
-  #include <unistd.h>
-  #include <term.h>
-
-  void ClearScreen() {
-    if (!cur_term)
-      {
-      int result;
-      setupterm( NULL, STDOUT_FILENO, &result );
-      if (result <= 0) return;
-      }
-
-    putp( tigetstr( "clear" ) );
-  }
-
-#endif
 
 // source - https://stackoverflow.com/questions/158585/how-do-you-add-a-timed-delay-to-a-c-program
 void sleep_ms(int k) {
@@ -79,17 +24,17 @@ class Cell {
   bool current_state;
   bool future_state;
   World* worldspace;
-  Vector2 location;
+  Vector2<unsigned short> location;
   
   public : 
   
   Cell () {
-    this->location = Vector2();
+    this->location = Vector2<unsigned short>();
     this->current_state = false;
     this->future_state = false;
     this->worldspace = nullptr;
   }
-  Cell (Vector2 location, bool current_state, World* worldspace) {
+  Cell (Vector2<unsigned short> location, bool current_state, World* worldspace) {
     this->location = location;
     this->current_state = current_state;
     this->future_state = false;
@@ -128,7 +73,7 @@ class World {
     
     for (int i = 0; i < width; ++i) 
       for (int j = 0; j < height; ++j) {
-        globe[i][j] = Cell( Vector2(i,j), false, this);
+        globe[i][j] = Cell( Vector2<unsigned short>(i,j), false, this);
       }
   };
   ~World() {

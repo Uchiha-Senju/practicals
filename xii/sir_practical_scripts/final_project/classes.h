@@ -56,7 +56,7 @@
     void getData(std::istream& in_strm, std::ostream& out_strm) {
       out_strm << "\nEnter Student Details :";
       in_strm.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      out_strm << "\n\tName : "; in_strm.getline(name, 20);
+      out_strm << "\n\tName : "; in_strm.getline(name, 50);
       out_strm << "\tRoll no. : "; in_strm >> roll_no;
       out_strm << "\tSubject codes : "; for (int i = 0; i < 6; ++i) in_strm >> subjects[i];
     }
