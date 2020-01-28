@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "classes.h"
+#include "../classes.h"
 
 int main() {
   int n;
