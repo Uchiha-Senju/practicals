@@ -1,3 +1,6 @@
+# Source :
+# https://github.com/gamebusterz/Indian-Name-Generator/blob/master/GenNames.py
+
 first_names = [
                 'Vaishnavi',
                 'Sunthari',
