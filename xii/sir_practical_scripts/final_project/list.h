@@ -248,6 +248,10 @@
       void remove(unsigned int index) {
         removeByPointer(getNode(index));
       }
+      void remove(Iterator iter) {
+        if (not iter.hasEnded())
+          removeByPointer(iter.current);
+      }
       // Constructors
       List() : first(nullptr), last(nullptr), length(0) {}
       List(const T* const data_arr, unsigned int len) : List() {

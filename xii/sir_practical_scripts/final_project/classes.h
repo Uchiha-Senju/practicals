@@ -6,17 +6,17 @@
   
   struct Subject {
     char name[51];
-    short code;
+    unsigned short code;
     
     Subject() : code(0) {name[0] = '\0';}
-    Subject(short c) : code(c) {name[0] = '\0';}
-    Subject(short c, std::string n) : code(c) {
+    Subject(unsigned short c) : code(c) {name[0] = '\0';}
+    Subject(unsigned short c, std::string n) : code(c) {
       int i;
       for (std::string::iterator it = (i = 0, n.begin()); it != n.end() and i < 50; ++i, ++it)
         name[i] = *it;
       name[i] = '\0';
     }
-    Subject(short c, char* n) : code(c) {
+    Subject(unsigned short c, char* n) : code(c) {
       int i;
       for (int i = 0 ; i < 50 and n[i] != '\0'; ++i)
         name[i] = n[i];
@@ -41,8 +41,8 @@
 
   struct Student {
     char name[50];
-    short roll_no;
-    short subjects[6];
+    unsigned short roll_no;
+    unsigned short subjects[6];
     
     
     void display(std::ostream& out_strm) {

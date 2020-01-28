@@ -2,8 +2,6 @@
   #define VARAD_GRAPH_H_INCLUDED
   
   #include "list.h"
-  #include <iostream>
-  #include <iomanip>
   
   namespace graph_h {
     // Add const to type if it is a pointer
@@ -140,8 +138,8 @@
           bool is_connected = true;
           // Come out color-checking loop if colors have run out or 
           // the current vertex is not connected to any vertex of the given color
-		  // 
-		  // Don't increment color if none are connected
+		  
+          // Don't increment color if none are connected
           for (; not (color.hasEnded() or not is_connected); is_connected ? color++ : color)
             // Come out of vertex-connection-checking loop
             // if there are no more vertices to check or

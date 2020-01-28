@@ -103,7 +103,7 @@ class Dummy : public graph_h::BinaryFunctor<Subject> {
 };
 
 int main () {
-  short code;
+  unsigned short code;
   char user_choice;
   
   Graph<Subject> subjects;
@@ -130,8 +130,10 @@ int main () {
         Set<Subject> subject_combo;
         for (int i = 0; i < 6; ++i) {
           std::cin >> code;
-          subject_combo.add(Subject(code));
-          subjects.makeVertex(Subject(code));
+          Subject sub(code);
+          subject_combo.add(sub);
+          if ( subjects.vertices.includes(Graph<Subject>::Vertex(sub)) == -1)
+            subjects.makeVertex(sub);
         }
         subject_choices.add(subject_combo);
       }
@@ -141,7 +143,11 @@ int main () {
         Set<Subject> subject_combo;
         for (int i = 0; i < 6; ++i) {
           std::cin >> code;
-          subject_combo.add(Subject(code));
+          Subject sub(code);
+          subject_combo.add(sub);
+          int sub_pos = subjects.vertices.includes(Graph<Subject>::Vertex(sub));
+          if (subjects.vertices[sub_pos].edges.len() == 0)
+            subjects.removeVertex(sub_pos);
         }
         subject_choices.remove(subject_combo);
       }
@@ -178,12 +184,11 @@ int main () {
         std::cout << "Enter the file name of the records file : "; std::cin.getline(file_name, 51);
         
         Student stu;
-        Set<Subject> subject_set;
         std::ifstream records(file_name, std::ios::binary | std::ios::in);
         if (not (records.is_open() and records.good())) {
           records.close();
           std::cerr << "FileError : cannot open file stream \"" << file_name << "\"";
-          return 1;
+          break;
         }
         records.seekg(0, std::ios::beg);
         // Wipe everything clean
@@ -191,6 +196,7 @@ int main () {
         subject_choices = Set<Set<Subject>>();
         // Load all the subject sets one by one
         while( records.read((char*)(&stu), sizeof(Student))) {
+          Set<Subject> subject_set;
           for (int i = 0; i < 6; ++i)
             subject_set.add(Subject(stu.subjects[i]));
           subject_choices.add(subject_set);
